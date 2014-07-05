@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" ng-app="swanepoelMethod">
+<head>
+<meta charset="utf-8">
+<title>Google Phone Gallery</title>
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+<link rel="stylesheet" href="css/app.css">
+<script src="bower_components/angular/angular.js"></script>
+  <script src="js/modules/calculation.js"></script>
+  <script src="js/modules/plotting.js"></script>
+  <script src="js/modules/swanepoelMethod.js"></script>
+
+<script src="bower_components/jquery/jquery.min.js"></script>
+<script src="bower_components/flot.tooltip/js/jquery.flot.js"></script>
+<script src="bower_components/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+  <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="bower_components/flot.tooltip/js/excanvas.min.js"></script><![endif]-->
+</head>
+<body>
+<div ng-controller="cos">
+  <ul>
+  <!--
+    <li ng-repeat="point in derivatives">
+      {{point[0] | number:2}} : {{point[1] | number:2}}
+    </li>
+  -->
+  </ul>
+  <div id="flot-plot" style="width:90%;height:500px" ng-init="drawPlot()"></div>
+  <div id="flot-extrema" style="width:90%;height:500px" ng-init="findExtrema();"></div>
+  <button ng-click="findExtrema()">find extrema</button>
+</div>
+
+</body>
+</html>
