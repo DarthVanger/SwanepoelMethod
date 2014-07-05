@@ -1,0 +1,6 @@
+swanepoel_method_main_homepage:
+    path:     /
+    defaults: { _controller: SwanepoelMethodMainBundle:Default:index }
+swanepoel_method_main_upload:
+    path:     /upload
+    defaults: { _controller: SwanepoelMethodMainBundle:Default:upload}

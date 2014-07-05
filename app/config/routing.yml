@@ -1,0 +1,4 @@
+swanepoel_method_main:
+    resource: "@SwanepoelMethodMainBundle/Resources/config/routing.yml"
+    prefix:   /
+

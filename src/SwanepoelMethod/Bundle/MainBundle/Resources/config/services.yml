@@ -1,0 +1,7 @@
+parameters:
+#    swanepoel_method_main.example.class: SwanepoelMethod\Bundle\MainBundle\Example
+
+services:
+#    swanepoel_method_main.example:
+#        class: %swanepoel_method_main.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
