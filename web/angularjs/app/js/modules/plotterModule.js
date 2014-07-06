@@ -1,6 +1,6 @@
 (function() {
-  var app = angular.module('plotter', []);
-  app.service('plotter', Plotter);
+  var app = angular.module('plotterModule', []);
+  app.service('Plotter', Plotter);
 
   var options = {
     lines: { show: false },

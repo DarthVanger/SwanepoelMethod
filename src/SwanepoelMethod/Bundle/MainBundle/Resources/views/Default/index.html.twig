@@ -6,106 +6,55 @@
 
 {% set bower = '/angularjs/app/bower_components' %}
 
-<!-- jquery file upload styles -->
-  <!-- Bootstrap styles -->
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-  <!-- blueimp Gallery styles -->
-  <link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
-  <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-  <link rel="stylesheet" href="{{ bower }}/jquery-file-upload/css/jquery.fileupload.css">
-  <link rel="stylesheet" href="{{ bower }}/jquery-file-upload/css/jquery.fileupload-ui.css">
-  <!-- CSS adjustments for browsers with JavaScript disabled -->
-  <noscript><link rel="stylesheet" href="{{ bower }}/jquery-file-upload/css/jquery.fileupload-noscript.css"></noscript>
-  <noscript><link rel="stylesheet" href="{{ bower }}/jquery-file-upload/css/jquery.fileupload-ui-noscript.css"></noscript>
-
 <!-- <link rel="stylesheet" href="{{ asset('angularjs/app/bower_components/bootstrap/dist/css/bootstrap.css') }}"> -->
 <link rel="stylesheet" href="{{ asset('angularjs/app/css/main.css') }}">
-<script src="{{ bower }}{{ asset('angular/angular.js') }}"></script>
-    <script src="{{ bower }}{{ asset('angular-upload/angular-upload.min.js') }}"></script>
-  <script src="{{ asset('angularjs/app/js/modules/calculation.js') }}"></script>
-  <script src="{{ asset('angularjs/app/js/modules/plotting.js') }}"></script>
-  <script src="{{ asset('angularjs/app/js/swanepoelMethod.js') }}"></script>
 
+<!-- jquery -->
 <script src="{{ bower }}{{ asset('jquery/jquery.min.js') }}"></script>
+
+<!-- angular-file-upload plugin shim for old browsers -->
+<script src="{{ bower }}/ng-file-upload/angular-file-upload-shim.min.js"></script> 
+
+<script src="{{ bower }}{{ asset('angular/angular.js') }}"></script>
+  <script src="{{ bower }}{{ asset('angular-resource/angular-resource.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/modules/calculationEngine.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/modules/fileManagerModule.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/modules/plotterModule.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/swanepoelMethod.js') }}"></script>
+  <!-- angular-file-upload plugin -->
+  <script src="{{ bower }}/ng-file-upload/angular-file-upload.min.js"></script> 
+
+<!-- jquery-csv -->
+<script src="{{ bower }}{{ asset('jquery-csv/src/jquery.csv.js') }}"></script>
+
+<!-- "flot" plotting tool -->
 <script src="{{ bower }}{{ asset('flot.tooltip/js/jquery.flot.js') }}"></script>
 <script src="{{ bower }}{{ asset('flot.tooltip/js/jquery.flot.tooltip.min.js') }}"></script>
   <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ asset('angularjs/app/bower_components/flot.tooltip/js/excanvas.min.js') }}"></script><![endif]-->
-
-
 </head>
 <body>
-<div ng-include="'/angularjs/app/partials/fileUploadForm.html'"></div>
+<div ng-controller="ExperimentalDataFileUploadController">
+  <div>Upload your experimental data file (.csv)</div>
+  <input type="file" ng-file-select="onFileSelect($files)" >
+  <div ng-if="fileUploadSuccess">
+    {[{ uploadedFileName }]} was successefully uploaded
+  </div>
+  <div ng-if="fileUploadError">
+    При загрузке файла произошла ошибка сервера :(
+  </div>
+</div>
 <div ng-controller="cos">
-  <ul>
-  <!--
-    <li ng-repeat="point in cosPoints">
-      {[{point[0] | number:2}]} : {[{point[1] | number:2}]}
-    </li>
-  -->
-  </ul>
-  <div id="flot-plot" style="width:90%;height:500px" ng-init="drawPlot()"></div>
-  <div id="flot-extrema" style="width:90%;height:500px" ng-init="findExtrema();"></div>
-  <button ng-click="findExtrema()">find extrema</button>
+  <div ng-if="experimentalData != 'not loaded yet'">
+    <div >exp. data:</div>
+    <ul>
+      <li ng-repeat="point in experimentalData | limitTo:5 track by $index ">
+        {[{point[0] | number:2 }]} : {[{point[1] | number:2 }]}
+      </li>
+      <li> ... </li>
+    </ul>
+  </div>
+  <div id="flot-plot" style="width:90%;height:500px" ng-show="experimentalData != 'not loaded yet'"></div>
 </div>
 
 </body>
 </html>
-
-<!-- jquery-file-upload scripts -->
-  <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-  <script src="{{ bower }}/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
-  <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-  <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.min.js"></script>
-  <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-  <script src="http://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
-  <!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  <!-- blueimp Gallery script -->
-  <script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
-  <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-  <script src="{{ bower }}/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-  <!-- The basic File Upload plugin -->
-  <script src="{{ bower }}/jquery-file-upload/js/jquery.fileupload.js"></script>
-  <!-- The File Upload processing plugin -->
-  <script src="{{ bower }}/jquery-file-upload/js/jquery.fileupload-process.js"></script>
-  <!-- The File Upload validation plugin -->
-  <script src="{{ bower }}/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
-  <!-- The File Upload Angular JS module -->
-  <script src="{{ bower }}/jquery-file-upload/js/jquery.fileupload-angular.js"></script>
-  <!-- The File Upload Angular JS app -->
-  <script src="/angularjs/app/js/modules/fileUpload.js"></script>
-<!-- -------------------------------------------- -->
-
-<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-<script src="{{ bower }}/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-<script>
-/*jslint unparam: true */
-/*global window, $ */
-$(function () {
-    'use strict';
-    // Change this to the location of your server-side upload handler:
-    var url = window.location.hostname === 'blueimp.github.io' ?
-                '//jquery-file-upload.appspot.com/' : '/upload';
-    $('#fileupload').fileupload({
-        url: url,
-        dataType: 'json',
-        done: function (e, data) {
-            console.log(e);
-            console.log(data);
-            $.each(data.result.files, function (index, file) {
-                $('<p/>').text(file.name).appendTo('#files');
-            });
-        },
-        progressall: function (e, data) {
-            console.log(e);
-            console.log(data);
-            var progress = parseInt(data.loaded / data.total * 100, 10);
-            $('#progress .progress-bar').css(
-                'width',
-                progress + '%'
-            );
-        }
-    }).prop('disabled', !$.support.fileInput)
-        .parent().addClass($.support.fileInput ? undefined : 'disabled');
-});
-</script>

@@ -1,7 +1,14 @@
+/** calculationEngine module
+ *
+ *  Provides services for calculations
+ */
 (function() {
-  var app = angular.module('calculation', []);
-  app.service('calculus', Calculus);
+  var app = angular.module('calculationEngine', []);
+  app.service('Calculus', Calculus);
 
+  /** Calculus service
+   *  Provides methods for finding extrema, building splines.
+   */
   function Calculus() {
     /** findExtrema
      *  Finds extrema in set of points.

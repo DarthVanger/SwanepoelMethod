@@ -11,6 +11,6 @@
     "jquery": "1.10.2",
     "bootstrap": "~3.1.1",
     "flot.tooltip": "*",
-    "angular-upload": "~1.0.11"
+    "ng-file-upload": "*"
   }
 }

@@ -4,3 +4,12 @@ swanepoel_method_main_homepage:
 swanepoel_method_main_upload:
     path:     /upload
     defaults: { _controller: SwanepoelMethodMainBundle:Default:upload}
+swanepoel_method_main_get_uploaded_file_contents:
+    path:     /get-file-contents/{filename}
+    defaults: { _controller: SwanepoelMethodMainBundle:Default:getUploadedFileContents}
+swanepoel_method_main_view_uploaded_file_contents:
+    path:     /view-file/{filename}
+    defaults: { _controller: SwanepoelMethodMainBundle:Default:viewUploadedFileContents}
+swanepoel_method_main_upload_file:
+    path:     /save-file
+    defaults: { _controller: SwanepoelMethodMainBundle:Default:saveFile}

@@ -18,10 +18,9 @@ class DefaultController extends Controller
 
     public function uploadAction(Request $request)
     {
-        $experimentalData = new ExperimentalData(); 
-        $form = $this->createFormBuilder($experimentalData)
-            ->add('file', 'file')
-            ->add('upload', 'submit')
+        $form = $this->container->get('form.factory')
+            ->createNamedBuilder(null, 'form', null, array('csrf_protection' => false))
+            ->add('file','file')
             ->getForm();
 
         $form->handleRequest($request);
@@ -30,10 +29,48 @@ class DefaultController extends Controller
             $file = $form['file']->getData();
             $dir = 'upload';
             $file->move($dir, $file->getClientOriginalName());
-            return new Response('ababa gala maga valid');
+            $response = array('uploadedFileName' => $file->getClientOriginalName());
+            return new Response(json_encode($response));
         } else {
-            //return $this->render('SwanepoelMethodMainBundle:Default:upload.html.twig', array('form' => $form->createView()));
-            return new Response($request->__toString());
+            if ($form->isSubmitted()) {
+                $message = '';
+                foreach($form->getErrors() as $error) {
+                  $message .= $error->getMessage();
+                }
+                return new Response('form is submitted. But there are errors:' . $message);
+            } else {
+                return new Response('form is not submitted');
+            }
         }
+    }
+
+    public function getUploadedFileContentsAction($filename)
+    {
+      $filepath = $path = $this->get('kernel')->getRootDir() . '/../web/upload/' . $filename;
+      if(file_exists($filepath)) {
+          $responseContent = file_get_contents($filepath);
+      } else {
+          $responseContent = 'file named "'.$filename.'" not found on server. path = ' .$filepath;
+      }
+      return new Response($responseContent); 
+    }
+
+    public function viewUploadedFileContentsAction($filename)
+    {
+      $filepath = $path = $this->get('kernel')->getRootDir() . '/../web/upload/' . $filename;
+      if(file_exists($filepath)) {
+          $responseContent = '<pre>' . file_get_contents($filepath) . '</pre>';
+      } else {
+          $responseContent = 'file named "'.$filename.'" not found on server. path = ' .$filepath;
+      }
+      return new Response($responseContent); 
+    }
+
+    public function saveFileAction(Request $request) {
+      $dir = 'savedFiles/';
+      $jsonData = $request->getContent();
+      $data = json_decode($jsonData);
+      file_put_contents($dir . $data->filename, $data->fileContents);
+      return new Response($data->fileContents);
     }
 }
