@@ -17,7 +17,7 @@
 
 <script src="{{ bower }}{{ asset('angular/angular.js') }}"></script>
   <script src="{{ bower }}{{ asset('angular-resource/angular-resource.js') }}"></script>
-  <script src="{{ asset('angularjs/app/js/modules/calculationEngine.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/modules/calculationEngineModule.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/modules/fileManagerModule.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/modules/plotterModule.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/swanepoelMethod.js') }}"></script>
@@ -33,18 +33,19 @@
   <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ asset('angularjs/app/bower_components/flot.tooltip/js/excanvas.min.js') }}"></script><![endif]-->
 </head>
 <body>
-<div ng-controller="ExperimentalDataFileUploadController">
-  <div>Upload your experimental data file (.csv)</div>
-  <input type="file" ng-file-select="onFileSelect($files)" >
-  <div ng-if="fileUploadSuccess">
-    {[{ uploadedFileName }]} was successefully uploaded
+<div id="calculations-output-area" ng-controller="CalculationController as Calculations" >
+  <div ng-controller="ExperimentalDataFileUploadController">
+    <div>Upload your experimental data file (.csv)</div>
+    <input type="file" ng-file-select="onFileSelect($files)" >
+    <div ng-if="fileUploadSuccess">
+      {[{ uploadedFileName }]} was successefully uploaded
+    </div>
+    <div ng-if="fileUploadError">
+      При загрузке файла произошла ошибка сервера :(
+    </div>
   </div>
-  <div ng-if="fileUploadError">
-    При загрузке файла произошла ошибка сервера :(
-  </div>
-</div>
-<div ng-controller="cos">
-  <div ng-if="experimentalData != 'not loaded yet'">
+
+  <div ng-show="calculationProgress.rawExperimentalDataLoaded">
     <div >exp. data:</div>
     <ul>
       <li ng-repeat="point in experimentalData | limitTo:5 track by $index ">
@@ -53,7 +54,7 @@
       <li> ... </li>
     </ul>
   </div>
-  <div id="flot-plot" style="width:90%;height:500px" ng-show="experimentalData != 'not loaded yet'"></div>
+  <div id="experimental-data" style="width:90%; height:500px"></div>
 </div>
 
 </body>

@@ -1,0 +1,12 @@
+<div ng-controller="cos">
+  <div ng-if="experimentalData != 'not loaded yet'">
+    <div >exp. data:</div>
+    <ul>
+      <li ng-repeat="point in experimentalData | limitTo:5 track by $index ">
+        {[{point[0] | number:2 }]} : {[{point[1] | number:2 }]}
+      </li>
+      <li> ... </li>
+    </ul>
+  </div>
+  <div id="flot-plot" style="width:90%;height:500px" ng-show="experimentalData != 'not loaded yet'"></div>
+</div>

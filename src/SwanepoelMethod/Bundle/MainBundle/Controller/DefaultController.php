@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Templating\Helper\AssetsHelper;
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+
 class DefaultController extends Controller
 {
     public function indexAction()
@@ -27,9 +30,19 @@ class DefaultController extends Controller
 
         if ($form->isValid()) {
             $file = $form['file']->getData();
-            $dir = 'upload';
-            $file->move($dir, $file->getClientOriginalName());
-            $response = array('uploadedFileName' => $file->getClientOriginalName());
+            $dir = 'upload/';
+            $filename = $file->getClientOriginalName();
+            $file->move($dir, $filename);
+
+            // replace 'lastUploaded' file with the newly uploaded one
+            try {
+              $fs = new Filesystem();
+              $fs->copy($dir.$filename, $dir.'lastUploaded.csv', true);
+            } catch(Exception $ex) {
+                return new Response($ex->getMessage()); 
+            }
+
+            $response = array('uploadedFileName' => $filename);
             return new Response(json_encode($response));
         } else {
             if ($form->isSubmitted()) {
