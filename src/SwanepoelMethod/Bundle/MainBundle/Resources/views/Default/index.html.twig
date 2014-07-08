@@ -17,7 +17,7 @@
 
 <script src="{{ bower }}{{ asset('angular/angular.js') }}"></script>
   <script src="{{ bower }}{{ asset('angular-resource/angular-resource.js') }}"></script>
-  <script src="{{ asset('angularjs/app/js/modules/calculationEngineModule.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/modules/calculationModule.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/modules/fileManagerModule.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/modules/plotterModule.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/swanepoelMethod.js') }}"></script>
@@ -34,8 +34,8 @@
 </head>
 <body>
 <div id="calculations-output-area" ng-controller="CalculationController as Calculations" >
-  <div ng-controller="ExperimentalDataFileUploadController">
-    <div>Upload your experimental data file (.csv)</div>
+  <div ng-controller="FilmSpectrumFileUploadController">
+    <div>Upload your film spectrum data file (.csv)</div>
     <input type="file" ng-file-select="onFileSelect($files)" >
     <div ng-if="fileUploadSuccess">
       {[{ uploadedFileName }]} was successefully uploaded
@@ -45,10 +45,12 @@
     </div>
   </div>
 
-  <div ng-show="calculationProgress.rawExperimentalDataLoaded">
-    <div >exp. data:</div>
+  <!-- <div ng-directive="waitingFilmSpectrumUpload" ng-hide="calculationProgress.filmSpectrumFileUploaded"></div>  -->
+
+  <div ng-show="calculationProgress.filmSpectrumDataLoaded">
+    <div >film spectrum:</div>
     <ul>
-      <li ng-repeat="point in experimentalData | limitTo:5 track by $index ">
+      <li ng-repeat="point in filmSpectrum | limitTo:5 track by $index ">
         {[{point[0] | number:2 }]} : {[{point[1] | number:2 }]}
       </li>
       <li> ... </li>

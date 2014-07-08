@@ -4,7 +4,7 @@
  *  
  */
 (function() {
-  var app = angular.module('fileManagerModule', ['angularFileUpload', 'calculationEngineModule']);
+  var app = angular.module('fileManagerModule', ['angularFileUpload', 'calculationModule']);
 
   /** FileSystemAPI service
    *  Provides API to get/upload files on server.
@@ -99,14 +99,14 @@
       return csv;
     }
 
-    /** getLastUploadedExperimentalData
+    /** getLastUploadedFilmSpectrum
      *  Gets last uploaded file from server,
      *  parses it to double-array,
      *  and returns via promise object.
      *
      *  @return Promise object with double-array experimental data in result.data
      */
-    this.getLastUploadedExperimentalData = function() {
+    this.getLastUploadedFilmSpectrum = function() {
       console.log('debug', 'getLastUploadedFileContents called');
       var deferred = $q.defer();
       deferred.resolve(
@@ -120,10 +120,26 @@
       );
       return deferred.promise;
     };
+
+    /** loadFilmSpectrumFromFile
+     *
+     *  @return Promise object with response.data = filmSpectrum in 2d array format
+     */
+    this.loadFilmSpectrumFromFile = function(filename) {
+      var deferred = $q.defer();
+      deferred.resolve(
+        FileSystemAPI.getFileContents(filename).then(function(result) {
+          var fileContents = result.data;
+          var filmSpectrum = self.parseCsvString(fileContents);
+          return {data: filmSpectrum};
+        })
+     ); 
+     return deferred.promise;
+    }
   });
 
   
-  /** ExperimentalDataFileUploadController
+  /** FilmSpectrumFileUploadController
    *  Controls experimental data file upload (via ajax).
    *
    *  Uploads file on server, then gets it contents from server,
@@ -133,7 +149,7 @@
    *  TBD: create separate method for getting file contents, parsing, and emitting.
    *  Let this controller control only ajax file upload.
    */
-  app.controller('ExperimentalDataFileUploadController', function($scope, $upload, $http, ExperimentalDataManager, FileSystemAPI) {
+  app.controller('FilmSpectrumFileUploadController', function($scope, $upload, $http, ExperimentalDataManager, FileSystemAPI) {
     $scope.fileUploadSuccess = false;
     $scope.fileUploadError = false;
     $scope.onFileSelect = function($files) {
@@ -153,24 +169,17 @@
           $scope.uploadedFileName = data.uploadedFileName;
           console.log('debug', 'uploaded file name: ' + $scope.uploadedFileName);
           $scope.fileUploadSuccess = true;
-          // now get this file contents from server
-          FileSystemAPI.getFileContents($scope.uploadedFileName).then(function(result) {
-            var fileContents = result.data;
-            var experimentalData = ExperimentalDataManager.parseCsvString(fileContents);
-            //CalculationEngine.applySwanepoelMethod(experimentalData);
-            //CalculationController.applySwanepoelMethod(experimentalData);
-            //ExperimentalDataManager.experimentalData.points = experimentalData;
-            //ExperimentalDataManager.experimentalData.isLoaded = true;
-            //console.log('ExperimentalDataManager.experimentalData now = ' + ExperimentalDataManager.experimentalData);
-            console.log('debug', 'ExperimentalDataManager: emitting \'ExperimentalDataLoaded\' event');
-            $scope.$emit('ExperimentalDataLoaded', experimentalData);
-          });
+
+          // $emit NewSpectrumFileUpload event to notify calculation controller.
+          console.log('debug', 'ExperimentalDataManager: emitting \'NewFilmSpectrumFileUploaded\' event');
+          $scope.$emit('NewFilmSpectrumFileUploaded', $scope.uploadedFileName);
         }).error(function() {
-          console.log('debug', 'file upload error');
-          $scope.fileUploadError = true;
+            console.log('debug', 'file upload error');
+            $scope.fileUploadError = true;
         });
       }
     }
   });
+
 
 })();

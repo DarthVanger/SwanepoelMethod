@@ -3,7 +3,7 @@
  *  Provides calculation controller and calculation services (calculus, formulas).
  */
 (function() {
-  var app = angular.module('calculationEngineModule', ['fileManagerModule', 'plotterModule']);
+  var app = angular.module('calculationModule', ['fileManagerModule', 'plotterModule']);
   //app.service('CalculationEngine', CalculationEngine);
   app.service('Calculus', Calculus);
   app.service('Formulas', Formulas);
@@ -21,14 +21,15 @@
        *  Experimental data in double array format.
        *  E.g. [ [1,2], [3,4], ... ]
        */
-      $scope.experimentalData = 'not loaded yet';
+      $scope.filmSpectrum= 'not loaded yet';
 
       /**
        *  Calculation progress stages, which show/hide corresponding divs,
        *  when toggled true/false.
        */
       $scope.calculationProgress = {
-        rawExperimentalDataLoaded: false
+        filmSpectrumFileUploaded: false,
+        filmSpectrumDataLoaded: false
       }
 
       this.extrema = 'not calculated yet';
@@ -39,14 +40,19 @@
       });
 
       // listen for file upload, to update the experimental data
-      $scope.$on('ExperimentalDataLoaded', function(event, experimentalData) {
-        console.log('debug', 'CalculationController: Catched \'ExperimentalDataLoaded\' event');
-        // reset calculation progress, because new data is loaded
+      $scope.$on('NewFilmSpectrumFileUploaded', function(event, filename) {
+        console.log('debug', 'CalculationController: Catched \'NewFilmSpectrumFileUploaded\' event');
+        // reset calculation progress, because new data was loaded
         resetCalculationProgress();
-        // update the data
-        $scope.experimentalData = experimentalData;
-        // begin with first step again
-        showRawExperimentalData();
+        $scope.calculationProgress.filmSpectrumFileUploaded = true;
+        // load new data from file
+        ExperimentalDataManager.loadFilmSpectrumFromFile(filename).then(function(result) {
+          $scope.calculationProgress.filmSpectrumDataLoaded = true;
+          // update the data
+          $scope.filmSpectrum = result.data;
+          // begin with first step again
+          showRawFilmSpectrum();
+        });
       });
 
       // TBD: Next step is to add 'start calculations button'
@@ -61,20 +67,22 @@
        *  Loads last uploaded file data as initial data to show instead of blank page.
        */
       var loadInitialExperimentalData = function() {
-        ExperimentalDataManager.getLastUploadedExperimentalData().then(function(result) {
+        ExperimentalDataManager.getLastUploadedFilmSpectrum().then(function(result) {
           //console.log('debug', 'CalculationController: getting last experimental data, data = ' + result.data);
-          $scope.experimentalData = result.data; 
-          showRawExperimentalData();
+          $scope.calculationProgress.filmSpectrumFileUploaded = true;
+          $scope.calculationProgress.filmSpectrumDataLoaded = true;
+          $scope.filmSpectrum = result.data; 
+          showRawFilmSpectrum();
         }); 
       }
 
-      /** showRawExperimentalData
+      /** showRawFilmSpectrum
        *  Shows raw experimental data with the plot.
        */
-      var showRawExperimentalData = function() {
-        $scope.calculationProgress.rawExperimentalDataLoaded = true;
+      var showRawFilmSpectrum = function() {
+        $scope.calculationProgress.filmSpectrumLoaded = true;
         var plotData = [
-          { data: $scope.experimentalData, label: "experiment"}
+          { data: $scope.filmSpectrum, label: "film spectrum"}
         ];
         Plotter.plot('experimental-data', plotData);
       }
@@ -93,24 +101,24 @@
     });
 
       //$scope.ExperimentalDataManager = ExperimentalDataManager;
-      //$scope.$watch('ExperimentalDataManager.experimentalData.isLoaded', function(experimentalData) {
-      //  console.log('debug', 'CalculationController: ExperimentalDataManager.experimentalData has changed');
-      //  if (experimentalData) {
+      //$scope.$watch('ExperimentalDataManager.filmSpectrum.isLoaded', function(filmSpectrum) {
+      //  console.log('debug', 'CalculationController: ExperimentalDataManager.filmSpectrum has changed');
+      //  if (filmSpectrum) {
       //    console.log('launching calculations');
-      //    this.applySwanepoelMethod(experimentalData.points); 
+      //    this.applySwanepoelMethod(filmSpectrum.points); 
       //  }
       //});
 
-   //   this.applySwanepoelMethod = function(experimentalData) {
+   //   this.applySwanepoelMethod = function(filmSpectrum) {
 
-   //     //self.experimentalData = ExperimentalDataManager.parseExperimentalDataFile(filename);
-   //     self.experimentalData = experimentalData;
-   //     self.experimentalDataIsLoaded = true;
+   //     //self.filmSpectrum = ExperimentalDataManager.parseExperimentalDataFile(filename);
+   //     self.filmSpectrum = filmSpectrum;
+   //     self.filmSpectrumIsLoaded = true;
 
-   //     self.extrema = Calculus.findExtrema(self.experimentalData);
+   //     self.extrema = Calculus.findExtrema(self.filmSpectrum);
 
    //     var plotData = [
-   //       { data: self.experimentalData, label: "experiment"},
+   //       { data: self.filmSpectrum, label: "experiment"},
    //       { data: self.extrema.minima, label: "minima"},
    //       { data: self.extrema.maxima, label: "maxima"}
    //     ];
@@ -132,7 +140,7 @@
    //    *  Experimental data in double array format.
    //    *  E.g. [ [1,2], [3,4], ... ]
    //    */
-   //   this.experimentalData = 'not loaded yet';
+   //   this.filmSpectrum = 'not loaded yet';
 
    //   this.extrema = 'not calculated yet';
    //   
@@ -141,15 +149,15 @@
    //    *  This is the main method that does all the calculation,
    //    *  calling all the other secondary methods.
    //    */
-   //   this.applySwanepoelMethod = function(experimentalData) {
+   //   this.applySwanepoelMethod = function(filmSpectrum) {
 
-   //     //self.experimentalData = ExperimentalDataManager.parseExperimentalDataFile(filename);
-   //     self.experimentalData = experimentalData;
+   //     //self.filmSpectrum = ExperimentalDataManager.parseExperimentalDataFile(filename);
+   //     self.filmSpectrum = filmSpectrum;
 
-   //     self.extrema = Calculus.findExtrema(self.experimentalData);
+   //     self.extrema = Calculus.findExtrema(self.filmSpectrum);
 
    //     var plotData = [
-   //       { data: self.experimentalData, label: "experiment"},
+   //       { data: self.filmSpectrum, label: "experiment"},
    //       { data: self.extrema.minima, label: "minima"},
    //       { data: self.extrema.maxima, label: "maxima"}
    //     ];
