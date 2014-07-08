@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en" ng-app="app">
+<head>
+<meta charset="utf-8">
+{% set bower = '/angularjs/app/bower_components' %}
+<script src="{{ bower }}{{ asset('angular/angular.js') }}"></script>
+  <script src="{{ bower }}{{ asset('angular-resource/angular-resource.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/test/app.js') }}"></script>
+  <!-- calculationModule -->
+    <script src="{{ asset('angularjs/app/js/test/testModule.js') }}"></script>
+    <script src="{{ asset('angularjs/app/js/test/testController.js') }}"></script>
+</head>
+<body ng-controller="testController">
+</body>
+</html>
