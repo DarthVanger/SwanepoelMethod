@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var app = angular.module('dataManagerModule', []);
+  var app = angular.module('dataManagerModule');
   /** FileManager service
    *  Provides API to get/upload files on server.
    */

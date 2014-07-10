@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var app = angular.module('calculationModule', []);
+  var app = angular.module('calculationModule');
   /** Calculus service
    *  Provides methods for finding extrema, building splines.
    */

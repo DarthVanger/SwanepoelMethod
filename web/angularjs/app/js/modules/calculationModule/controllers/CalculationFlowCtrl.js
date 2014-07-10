@@ -7,7 +7,7 @@
 (function() { 
    'use strict';
 
-   var app = angular.module('calculationModule', []);
+   var app = angular.module('calculationModule');
 
    app.controller('CalculationFlowCtrl', function($scope, DataManager, Calculus, Formulas, Plotter) {
       var self = this;
@@ -41,7 +41,7 @@
         resetCalculationProgress();
         $scope.calculationProgress.filmSpectrumFileUploaded = true;
         // load new data from file
-        ExperimentalDataManager.loadFilmSpectrumFromFile(filename).then(function(result) {
+        DataManager.loadFilmSpectrumFromFile(filename).then(function(result) {
           $scope.calculationProgress.filmSpectrumDataLoaded = true;
           // update the data
           $scope.filmSpectrum = result.data;
@@ -62,7 +62,7 @@
        *  Loads last uploaded file data as initial data to show instead of blank page.
        */
       var loadInitialExperimentalData = function() {
-        ExperimentalDataManager.getLastUploadedFilmSpectrum().then(function(result) {
+        DataManager.getLastUploadedFilmSpectrum().then(function(result) {
           //console.log('debug', 'CalculationController: getting last experimental data, data = ' + result.data);
           $scope.calculationProgress.filmSpectrumFileUploaded = true;
           $scope.calculationProgress.filmSpectrumDataLoaded = true;

@@ -1,17 +1,15 @@
 (function() {
   'use strict';
 
-  var app = angular.module('dataManagerModule', []);
+  var app = angular.module('dataManagerModule');
 
   /** FilmSpectrumFileUploadCtrl
    *  Controls experimental data file upload (via ajax).
    *
-   *  Uploads file on server, then gets it contents from server,
-   *  parses it from csv to arrays, and  $Emits 'ExperimentalDataLoaded',
-   *  with parsed data as argument.
+   *  On file upload $emits 'NewFilmSpectrumFileUploaded' event.
    *
    */
-  app.controller('FilmSpectrumFileUploadCtrl', function($scope, $upload, $http, ExperimentalDataManager, FileSystemAPI) {
+  app.controller('FilmSpectrumFileUploadCtrl', function($scope, $upload, $http, DataManager, FileManager) {
     $scope.fileUploadSuccess = false;
     $scope.fileUploadError = false;
     $scope.onFileSelect = function($files) {
@@ -33,7 +31,7 @@
           $scope.fileUploadSuccess = true;
 
           // $emit NewSpectrumFileUpload event to notify calculation controller.
-          console.log('debug', 'ExperimentalDataManager: emitting \'NewFilmSpectrumFileUploaded\' event');
+          console.log('debug', 'DataManager: emitting \'NewFilmSpectrumFileUploaded\' event');
           $scope.$emit('NewFilmSpectrumFileUploaded', $scope.uploadedFileName);
         }).error(function() {
             console.log('debug', 'file upload error');

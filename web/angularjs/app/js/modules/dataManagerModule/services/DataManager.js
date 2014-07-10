@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var app = angular.module('dataManagerModule', []);
+  var app = angular.module('dataManagerModule');
 
   /** DataManager service
    *  Responsible for managing files.
@@ -51,7 +51,7 @@
       console.log('debug', 'getLastUploadedFileContents called');
       var deferred = $q.defer();
       deferred.resolve(
-        FileSystemAPI.getFileContents('lastUploaded.csv').then(function(response) {
+        FileManager.getFileContents('lastUploaded.csv').then(function(response) {
             //console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success, response.data: ' + response.data);
             console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success');
             var fileContents = response.data;
@@ -69,7 +69,7 @@
     this.loadFilmSpectrumFromFile = function(filename) {
       var deferred = $q.defer();
       deferred.resolve(
-        FileSystemAPI.getFileContents(filename).then(function(result) {
+        FileManager.getFileContents(filename).then(function(result) {
           var fileContents = result.data;
           var filmSpectrum = self.parseCsvString(fileContents);
           return {data: filmSpectrum};
