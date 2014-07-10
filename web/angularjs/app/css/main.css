@@ -1,8 +1,33 @@
 /* swanepoelMethod main css stylesheet */
 
 /* @import "../bower_components/angular-upload/src/directives/btnUpload.min.css"; */
-
+html, body {
+  width: 100%;
+}
 body {
-  padding-top: 20px;
+  padding: 20px;
 }
 
+.loading-message {
+  font-size: 1.3em;
+  color: #777;
+  font-weight: bold;
+}
+img.loading-icon {
+  vertical-align: middle;
+}
+
+.calculation-results {
+  width: 100%;
+}
+
+ul.data-points {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+ul.data-points li {
+  display: inline-block; 
+  border-right: solid black 1px;
+  padding: 10px;
+}

@@ -13,6 +13,7 @@
     $scope.fileUploadSuccess = false;
     $scope.fileUploadError = false;
     $scope.onFileSelect = function($files) {
+      $scope.$emit('NewFilmSpectrumFileUploadStart');
       for (var i = 0; i < $files.length; i++) {
         var file = $files[i];
         $scope.upload = $upload.upload({

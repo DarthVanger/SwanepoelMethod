@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="app">
+<html lang="en" ng-app="app" ng-controller="AppController">
 <head>
 <meta charset="utf-8">
 <title>Swanepoel Method</title>
@@ -23,11 +23,19 @@
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/controllers/CalculationFlowCtrl.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/services/Calculus.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/services/Formulas.js') }}"></script>
+    <!-- directives -->
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/waitingFilmSpectrumFileUpload.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/rawExperimentalData.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/waitingExtremaCalculation.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/extrema.js') }}"></script>
+    <!-- directives -->
+
   <!-- dataManagerModule -->
     <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/dataManagerModule.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/controllers/FilmSpectrumFileUploadCtrl.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/services/DataManager.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/services/FileManager.js') }}"></script>
+    <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/directives/filmSpectrumUploadForm.js') }}"></script>
     <script src="{{ bower }}/ng-file-upload/angular-file-upload.min.js"></script> 
   <!-- plotterModule -->
     <script src="{{ asset('angularjs/app/js/modules/plotterModule/plotterModule.js') }}"></script>
@@ -43,30 +51,15 @@
   <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="{{ asset('angularjs/app/bower_components/flot.tooltip/js/excanvas.min.js') }}"></script><![endif]-->
 </head>
 <body>
+
 <div id="calculations-output-area" ng-controller="CalculationFlowCtrl" >
-  <div ng-controller="FilmSpectrumFileUploadCtrl">
-    <div>Upload your film spectrum data file (.csv)</div>
-    <input type="file" ng-file-select="onFileSelect($files)" >
-    <div ng-if="fileUploadSuccess">
-      {[{ uploadedFileName }]} was successefully uploaded
-    </div>
-    <div ng-if="fileUploadError">
-      При загрузке файла произошла ошибка сервера :(
-    </div>
-  </div>
-
-  <!-- <div ng-directive="waitingFilmSpectrumUpload" ng-hide="calculationProgress.filmSpectrumFileUploaded"></div>  -->
-
-  <div ng-show="calculationProgress.filmSpectrumDataLoaded">
-    <div >film spectrum:</div>
-    <ul>
-      <li ng-repeat="point in filmSpectrum | limitTo:5 track by $index ">
-        {[{point[0] | number:2 }]} : {[{point[1] | number:2 }]}
-      </li>
-      <li> ... </li>
-    </ul>
-  </div>
-  <div id="experimental-data" style="width:90%; height:500px"></div>
+  <div film-spectrum-upload-form></div>
+  <div waiting-film-spectrum-file-upload ng-hide="calculationProgress.filmSpectrumFileUploaded"></div>
+  <div>Substrate refractive index: <input type="text" ng-model="substrateRefractiveIndex"</div>
+  <div raw-experimental-data ng-show="calculationProgress.filmSpectrumDataLoaded" class="calculation-results"></div>
+  <button ng-click="findExtrema()">Find extrema</button>
+  <div waiting-extrema-calculation ng-show="calculationProgress.calculatingExtrema && !calculationProgress.extremaFound"></div>
+  <div extrema ng-show="calculationProgress.extremaFound">
 </div>
 
 </body>

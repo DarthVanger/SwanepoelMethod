@@ -1,0 +1,16 @@
+<div>film spectrum:</div>
+<ul class="data-points">
+  <li>
+    <div>T</div>
+    <div>lambda</div>
+  </li>
+</ul>
+<ul class="data-points">
+  <li ng-repeat="point in filmSpectrum | limitTo:12 track by $index ">
+    <div>{[{point[0] | number:2 }]}</div>
+    <div>{[{point[1] | number:2 }]}</div>
+  </li>
+  <li> ... </li>
+</ul>
+<div id="experimental-data" style="width: 900px; height:500px"></div>
+

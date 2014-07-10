@@ -32,9 +32,17 @@
     //  self.plot(plotId, data); 
     //}
 
-    this.plot = function(plotId, data) {
+    this.plot = function(plotId, data, options) {
       console.log('Plotter: plotting to #' + plotId);
-      $.plot($('#' + plotId), data, self.plotOptions);
+      options = jsonConcat(self.plotOptions, options);
+      $.plot($('#' + plotId), data, options);
+    }
+    
+    var jsonConcat = function(o1, o2) {
+     for (var key in o2) {
+      o1[key] = o2[key];
+     }
+     return o1;
     }
   }); // end Plotter service
 })(); // end closure

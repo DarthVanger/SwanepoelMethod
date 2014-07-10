@@ -1,0 +1,11 @@
+  <div ng-controller="FilmSpectrumFileUploadCtrl">
+    <div>Upload your film spectrum data file (.csv)</div>
+    <input type="file" ng-file-select="onFileSelect($files)" >
+    <div ng-if="fileUploadSuccess">
+      {[{ uploadedFileName }]} was successefully uploaded
+    </div>
+    <div ng-if="fileUploadError">
+      При загрузке файла произошла ошибка сервера :(
+    </div>
+  </div>
+

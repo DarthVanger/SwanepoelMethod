@@ -7,4 +7,8 @@
       $interpolateProvider.startSymbol('{[{').endSymbol('}]}');
     });
 
+  app.controller('AppController', function($scope) {
+    $scope.IMG_PATH = 'angularjs/app/img';
+  });
+
 })();

@@ -1,0 +1,34 @@
+    <div>minima:</div>
+    <ul class="data-points">
+      <li>
+        <div>T</div>
+        <div>lambda</div>
+      </li>
+    </ul>
+    <ul class="data-points">
+      <li ng-repeat="point in minima| limitTo:12 track by $index ">
+        <div>{[{point[0] | number:2 }]}</div>
+        <div>{[{point[1] | number:2 }]}</div>
+      </li>
+      <li> ... </li>
+    </ul>
+    <div>maxima:</div>
+    <ul class="data-points">
+      <li>
+        <div>T</div>
+        <div>lambda</div>
+      </li>
+    </ul>
+    <ul class="data-points">
+      <li ng-repeat="point in maxima| limitTo:12 track by $index ">
+        <div>{[{point[0] | number:2 }]}</div>
+        <div>{[{point[1] | number:2 }]}</div>
+      </li>
+      <li> ... </li>
+    </ul>
+    <div>extrema left boundary: <input type="text" ng-model="extremaLeftBoundary" /></div>
+    <div>extrema right boundary: <input type="text" ng-model="extremaRightBoundary" /></div>
+    <button ng-click="updateExtremaConsideringNewBoundaries()">update extrema considering new boundaries</button>
+      
+    <div id="extrema-plot" style="width: 900px; height:500px"></div>
+  </div>
