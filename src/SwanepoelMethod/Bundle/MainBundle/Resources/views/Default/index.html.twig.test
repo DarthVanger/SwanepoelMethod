@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" ng-app="test">
+<head>
+<meta charset="utf-8">
+<title>Swanepoel Method</title>
+
+{% set bower = '/angularjs/app/bower_components' %}
+
+<!-- <link rel="stylesheet" href="{{ asset('angularjs/app/bower_components/bootstrap/dist/css/bootstrap.css') }}"> -->
+<link rel="stylesheet" href="{{ asset('angularjs/app/css/main.css') }}">
+
+<!-- jquery -->
+<script src="{{ bower }}{{ asset('jquery/jquery.min.js') }}"></script>
+
+<!-- angular-file-upload plugin shim for old browsers -->
+<script src="{{ bower }}/ng-file-upload/angular-file-upload-shim.min.js"></script> 
+
+<script src="{{ bower }}{{ asset('angular/angular.js') }}"></script>
+  <script src="{{ bower }}{{ asset('angular-resource/angular-resource.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/test.js') }}"></script>
+</head>
+<body ng-controller="TestController">
+<div test-directive template-value="test" img-path="IMG_PATH"></div>
+
+</body>
+</html>

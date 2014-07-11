@@ -1,6 +1,8 @@
   <div ng-controller="FilmSpectrumFileUploadCtrl">
-    <div>Upload your film spectrum data file (.csv)</div>
-    <input type="file" ng-file-select="onFileSelect($files)" >
+    <button class="calculation-flow" onclick="document.getElementById('upload-field').click();">Upload film spectrum .csv file</button>
+    <div id="upload-wrap">
+      <input type="file" id="upload-field" ng-file-select="onFileSelect($files)" >
+    </div>
     <div ng-if="fileUploadSuccess">
       {[{ uploadedFileName }]} was successefully uploaded
     </div>

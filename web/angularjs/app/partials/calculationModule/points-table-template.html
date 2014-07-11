@@ -1,0 +1,14 @@
+<div class="points-table-name">{[{tableName}]}</div>
+<ul class="data-points">
+  <li>
+    <div class="row1">T</div>
+    <div class="row2">wavelength</div>
+  </li>
+</ul>
+<ul class="data-points">
+  <li ng-repeat="point in points | limitTo:12 track by $index ">
+    <div class="row1">{[{point[1] | number:2 }]}</div>
+    <div class="row2">{[{point[0] | number:2 }]}</div>
+  </li>
+  <li> ... </li>
+</ul>

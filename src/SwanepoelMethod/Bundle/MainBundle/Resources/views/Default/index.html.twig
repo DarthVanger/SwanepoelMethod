@@ -24,11 +24,11 @@
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/services/Calculus.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/services/Formulas.js') }}"></script>
     <!-- directives -->
-      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/waitingFilmSpectrumFileUpload.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/rawExperimentalData.js') }}"></script>
-      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/waitingExtremaCalculation.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/extrema.js') }}"></script>
-    <!-- directives -->
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/loading.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/pointsTable.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/calculationError.js') }}"></script>
 
   <!-- dataManagerModule -->
     <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/dataManagerModule.js') }}"></script>
@@ -54,12 +54,49 @@
 
 <div id="calculations-output-area" ng-controller="CalculationFlowCtrl" >
   <div film-spectrum-upload-form></div>
-  <div waiting-film-spectrum-file-upload ng-hide="calculationProgress.filmSpectrumFileUploaded"></div>
+
+  <!-- loading: film spectrum file -->
+  <div loading
+    message="Uploading film spectrum file..." 
+    img-path="IMG_PATH"
+    ng-hide="calculationProgress.filmSpectrumFileUploaded"
+  ></div>
+
   <div>Substrate refractive index: <input type="text" ng-model="substrateRefractiveIndex"</div>
+
   <div raw-experimental-data ng-show="calculationProgress.filmSpectrumDataLoaded" class="calculation-results"></div>
-  <button ng-click="findExtrema()">Find extrema</button>
-  <div waiting-extrema-calculation ng-show="calculationProgress.calculatingExtrema && !calculationProgress.extremaFound"></div>
-  <div extrema ng-show="calculationProgress.extremaFound">
+  <button class="calculation-flow" ng-click="findExtrema()">Find extrema</button>
+
+  <!-- loading: calculating extrema -->
+  <div loading
+    message="Calculating extrema..."
+    img-path="IMG_PATH"
+    ng-show="calculationProgress.calculatingExtrema && !calculationProgress.extremaFound"
+  ></div>
+
+  <!-- extrema -->
+  <div extrema ng-show="calculationProgress.extremaFound"></div>
+  
+  <button
+    class="calculation-flow"
+    ng-click="findEnvelopes()"
+    ng-show="calculationProgress.extremaFound"
+  >
+    Find Envelopes
+  </button>
+
+
+  <!-- loading: calculating envelopes -->
+  <div loading
+    message="Calculating envelopes..."
+    img-path="IMG_PATH"
+    ng-show="calculationProgress.calculatingEnvelopes && !calculationProgress.envelopesFound"
+  ></div>
+
+
+  <!-- calculation error -->
+  <div calculation-error ng-show="calculationErrorCatched"></div>
+
 </div>
 
 </body>

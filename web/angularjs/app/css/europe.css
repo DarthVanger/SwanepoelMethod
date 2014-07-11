@@ -1,0 +1,7 @@
+@font-face {
+	font-family: 'europe';
+	src: url('fonts/EuropeDemiNormal.eot');
+	src: local('☺'), url('fonts/EuropeDemiNormal.woff') format('woff'), url('fonts/EuropeDemiNormal.ttf') format('truetype'), url('fonts/EuropeDemiNormal.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

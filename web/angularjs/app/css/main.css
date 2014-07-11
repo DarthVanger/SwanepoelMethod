@@ -1,15 +1,65 @@
 /* swanepoelMethod main css stylesheet */
 
 /* @import "../bower_components/angular-upload/src/directives/btnUpload.min.css"; */
+@import url("fonts.css");
+
 html, body {
   width: 100%;
 }
 body {
   padding: 20px;
 }
+body {
+  color: #333;
+  line-height: 1.5em;
+  font-family: europe, Arial;
+}
 
+/* a bit of reset styles */
+button::-moz-focus-inner { border: 0; }
+button:active, input:focus {
+  outline: none;
+}
+/************************/
+
+.small-font {
+  font-size: .5em;
+}
+/* upload form */
+#upload-wrap {
+  display: none;
+}
+/**************/
+
+.calculation-error {
+  color: #b10490;
+}
+
+.data-plot {
+  height: 500px;
+  width: 900px;
+  margin: 2em 0 2em 0;
+}
+button.calculation-flow {
+  background-color: #40b0ff;
+  padding: .5em 1em .5em 1em;
+  margin: .3em;
+  color: white;
+  font-weight: bold;
+  font-size: 1em;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+input[type="text"] {
+  border: 0;
+  background-color: #eee;
+  padding: .5em;
+  border-radius: .5em;
+  font-family: europe;
+}
 .loading-message {
-  font-size: 1.3em;
+  font-size: 1.5em;
   color: #777;
   font-weight: bold;
 }
@@ -22,12 +72,25 @@ img.loading-icon {
 }
 
 ul.data-points {
+  background-color: #eef;
+  border-radius: 5px;
   display: inline-block;
   padding: 0;
   margin: 0;
 }
 ul.data-points li {
   display: inline-block; 
-  border-right: solid black 1px;
   padding: 10px;
 }
+ul.data-points li div.row1 {
+  border-bottom: solid #aaa 1px;
+}
+.points-table-name {
+  font-size: 1.25em;
+  color: #b8255d;
+  margin: .5em 0 .5em 0;
+}
+.vertical-margins {
+  margin: 1em 0 1em 0;
+}
+

@@ -22,6 +22,17 @@
      */
     this.parseCsvString = function(csvString) {
         var parsedData = $.csv.toArrays(csvString);
+
+        //var rows = csvString.split(/\r\n/); 
+        //var parsedData = [];
+        //for(var i=0; i<rows.length; i++) {
+        //  parsedData.push(rows[i].split(/,/)); 
+        //}
+
+        //for(var i=0; i<parsedData.length; i++) {
+        //  parsedData[i][0] = parseInt(parsedData[i][0]);
+        //  parsedData[i][1] = parseInt(parsedData[i][1]);
+        //}
         console.log('debug', 'parseCsvString(): parsing ok'); 
         return parsedData;
     }
@@ -45,18 +56,19 @@
      *  parses it to double-array,
      *  and returns via promise object.
      *
-     *  @return Promise object with double-array experimental data in result.data
+     *  @return Promise object with 2d array experimental data in result.data
      */
     this.getLastUploadedFilmSpectrum = function() {
       console.log('debug', 'getLastUploadedFileContents called');
       var deferred = $q.defer();
       deferred.resolve(
         FileManager.getFileContents('lastUploaded.csv').then(function(response) {
-            //console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success, response.data: ' + response.data);
-            console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success');
-            var fileContents = response.data;
-            var experimentalData = self.parseCsvString(fileContents);
-            return {data: experimentalData};
+           //console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success, response.data: ' + response.data);
+           console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success');
+           var fileContents = response.data;
+           var filmSpectrum = self.parseCsvString(fileContents);
+           var filmSpectrum = self.convertToNanometer(filmSpectrum);
+           return {data: filmSpectrum};
         })
       );
       return deferred.promise;
@@ -72,10 +84,18 @@
         FileManager.getFileContents(filename).then(function(result) {
           var fileContents = result.data;
           var filmSpectrum = self.parseCsvString(fileContents);
+          var filmSpectrum = self.convertToNanometer(filmSpectrum);
           return {data: filmSpectrum};
         })
      ); 
      return deferred.promise;
+    }
+
+    this.convertToNanometer = function(filmSpectrum) {
+      for(var i=0; i<filmSpectrum.length; i++) {
+        filmSpectrum[i][0] = 10000000 / filmSpectrum[i][0];
+      }
+      return filmSpectrum;
     }
 
   }); // end DataManager service
