@@ -1,6 +1,5 @@
   /** CalculationFlowCtrl
-   *
-   *  Controls the calculation flow (process),
+   * *  Controls the calculation flow (process),
    *  responds to user actions.
    *
    */
@@ -60,8 +59,10 @@
       $scope.extremaYThreshold = 5;
 
       /******************* Controller logic **************************/
+      
+      var self = this;
 
-      angular.element(document).ready(function () {
+      $(document).ready(function () {
         console.log('debug', 'document ready, loading inital exp data');
 
         /**
@@ -73,10 +74,13 @@
           $scope.calculationErrorCatched = true;
         });
 
-      // load some initial data to show not blank page
+
+        /**
+         *  Load some initial data to show not blank page
+         */ 
         loadInitialExperimentalData(); 
       
-        /****** watchers & listeners for spectra upload & refractive index change *******/
+        /****** Listen for spectra upload & refractive index change *******/
 
         $scope.$watch('substrateRefractiveIndex', function(newValue, oldValue) {
           if(newValue) {
@@ -111,45 +115,36 @@
 
         /******** calculation step 1 - find extrema *********/
 
+        /**
+         *  Watcher to plot data when its ready.
+         */
+        $scope.$watch('calculationProgress.extremaFound', function(newVal) {
+          if(newVal) {
+            plotExtrema();  
+          }
+        });
+
         /** findExtrema
          *  Find extrema. Is called on user button click.
          */
         $scope.findExtrema = function() {
           $scope.calculationProgress.calculatingExtrema = true;
+          var rightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length - 1][0];
           console.log('$scope.findExtrema() called');
           Calculus.findExtrema($scope.filmSpectrum, {
-            //leftBoundary: $scope.leftBoundary,
-            //rightBoundary: $scope.filmSpectrum($scope.filmSpectrum.length),
-            //yThreshold: $scope.yThreshold
+            leftBoundary: $scope.extremaLeftBoundary,
+            rightBoundary: $scope.extremaRightBoundary,
+            yThreshold: $scope.yThreshold
           }, function(extrema) {
             console.log('$scope.findExtrema: Calculus.findExtrema success');
+            console.log('$scope.findExtrema: minima = ' + extrema.minima);
+              console.log('$scope.findExtrema: maxima = ' + extrema.maxima);
             $scope.minima = extrema.minima;
             $scope.maxima = extrema.maxima;
             $scope.calculationProgress.extremaFound = true;
-            plotExtrema();
           });
         }
-        
-        /**
-         *  Extrema boundary change watchers. They Redraw plot on change!
-         */ 
-        $scope.$watch('extremaLeftBoundary', function(newValue, oldValue) {
-          console.log('debug', 'extremaLeftBoundary changed. newValue = ' + newValue + ', oldValue = ' + oldValue);
-          if(newValue) {
-            plotOptions.grid.markings[1] = 
-              { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaLeftBoundary, to: $scope.extremaLeftBoundary} };
-            Plotter.plot('extrema-plot', plotData, plotOptions);
-          }
-        });
-        $scope.$watch('extremaRightBoundary', function(newValue, oldValue) {
-          if(newValue) {
-            plotOptions.grid.markings[1] = 
-              { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaLeftBoundary, to: $scope.extremaLeftBoundary} };
-            plotOptions.grid.markings[2] = 
-              { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaRightBoundary, to: $scope.extremaRightBoundary} };
-            Plotter.plot('extrema-plot', plotData, plotOptions);
-          }
-        });
+
 
         /**
          *  Recalculate extrema is called by button click, after user have changed options.
@@ -166,7 +161,6 @@
               $scope.minima = extrema.minima;
               $scope.maxima = extrema.maxima;
               $scope.calculationProgress.extremaFound = true;
-              updateExtremaOnPlot(); 
             });
           } catch(error) {
             console.log('debug', 'catched calculationError, message = ' + error.message);
@@ -175,26 +169,96 @@
         };
 
         /********* Calculation Step 2 - find envelopes ***************/
+
+        /**
+         *  Watcher to plot data when its ready.
+         */
+        $scope.$watch('calculationProgress.envelopesFound', function(newVal) {
+          if(newVal) {
+            plotEnvelopes();  
+          }
+        });
         
+        /**
+         *  Finds envelopes and sends them to $scope.
+         */
         $scope.findEnvelopes = function() {
-          console.log('debug', 'findEnvelopes called');
+          console.log('debug', '$scope.findEnvelopes called');
           $scope.calculationProgress.calculatingEnvelopes = true;
+          var envelopeStartX = Math.min($scope.minima[0][0], $scope.maxima[0][0]);
+          console.log('debug', '$scope.findEnvelopes(): envelopeStartX = ' + envelopeStartX); 
+          var envelopeEndX = Math.max($scope.minima[$scope.minima.length-1][0], $scope.maxima[$scope.maxima.length-1][0]);
+          var options = {
+            envelopeStartX: envelopeStartX,
+            envelopeEndX: envelopeEndX
+          };
           try {
-            Calculus.findEnvelope($scope.minima, function(envelope) {
+            Calculus.findEnvelope($scope.minima, options, function(envelope) {
               //$scope.calculationProgress.envelopesFound = true;
               $scope.minimaEnvelope = envelope; 
+              console.log('debug', '$scope.findEnvelopes(): minimaEnvelope.length = ' + $scope.minimaEnvelope.length);
+
+              Calculus.findEnvelope($scope.maxima, options, function(envelope) {
+                //$scope.calculationProgress.envelopesFound = true;
+                $scope.maximaEnvelope = envelope; 
+                $scope.calculationProgress.envelopesFound = true;
+                console.log('debug', '$scope.findEnvelopes(): maximaEnvelope.length = ' + $scope.maximaEnvelope.length);
+              });
             });
           } catch (error) {
             $scope.$broadcast('CalculationError', error);
           }
         }
 
+        /********* Calculation Step 3 - find pesudo extrema  ***************/
 
-        // TBD:
-        // Also implement $broadcasting calculation error on exception catch.
-        // Implement 'back' button also.
+        /**
+         *  Watcher to plot data when its ready.
+         *  And to generate final table.
+         */
+        $scope.$watch('calculationProgress.pseudoExtremaFound', function(newVal) {
+          if(newVal) {
+            plotPseudoExtrema();
+            generateFinalExtremaTable();
+          }
+        });
+
+        $scope.findPseudoExtrema = function() {
+          $scope.calculationProgress.calculatingPseudoExtrema = true;
+          Calculus.findPseudoExtrema($scope.minima, $scope.maximaEnvelope, function(pseudoMaxima) {
+            console.log('debug', '$scope.findPseudoExtrema: pseudoMaxima = ' + pseudoMaxima);
+            $scope.pseudoMaxima = pseudoMaxima; 
+
+            Calculus.findPseudoExtrema($scope.maxima, $scope.minimaEnvelope, function(pseudoMinima) {
+              console.log('debug', '$scope.findPseudoExtrema: pseudoMinima = ' + pseudoMinima);
+              $scope.pseudoMinima = pseudoMinima; 
+              $scope.calculationProgress.pseudoExtremaFound = true;
+            });
+          });
+        }
+
+        $scope.saveFinalExtremaTable = function() {
+          $scope.savingFinalExtremaFile = true;
+          var handsontable = $('#final-extrema-points').data('handsontable');
+          var finalExtremaArray = handsontable.getData();
+          $scope.finalExtremaArray = finalExtremaArray;
+          DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv').then(function(result) {
+            console.log('debug', '$scope.downloadFinalExtremaTable(): save file success, link = ' + result.link);
+            $scope.finalExtremaFileLink = result.link;
+            $scope.finalExtremaFileReady = true;
+          });
+        }
+
+        $scope.continueToApplyingSwanepoelFormulas = function() {
+          $scope.saveFinalExtremaTable(); // save to server
+          $scope.$emit('switchPage', {
+            pageName: 'applying-swanepoel-formulas'
+          });
+        }
       
       }); // end document.ready()
+
+
 
       /****************************************************************/
       /*********************** Private methods ************************/
@@ -203,8 +267,8 @@
       /** loadInitialExperimentalData
        *  Loads last uploaded file data as initial data to show instead of blank page.
        */
-      var loadInitialExperimentalData = function() {
-        var INITIAL_SUBSTRATE_REFRACTIVE_INDEX = 500;
+      function loadInitialExperimentalData() {
+        var INITIAL_SUBSTRATE_REFRACTIVE_INDEX = 92;
 
         console.log('debug', 'loadInitialExperimentalData() called');
         DataManager.getLastUploadedFilmSpectrum().then(function(result) {
@@ -216,9 +280,34 @@
           $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
 
           $scope.substrateRefractiveIndex = INITIAL_SUBSTRATE_REFRACTIVE_INDEX;
-          // changing substrateRefractiveIndex will launch showRawFilmData(), because its being $watched.
+          // changing substrateRefractiveIndex will launch showRawFilmSpectrum(), because its being $watched.
         }); 
       }
+
+      /**
+       *  Generates final extrema table from extrema and pseudoextrema,
+       *  and shows it using handsontable.
+       */ 
+      var generateFinalExtremaTable = function() {
+        $scope.finalMinima = $scope.minima.concat($scope.pseudoMinima);
+        $scope.finalMaxima = $scope.maxima.concat($scope.pseudoMaxima);
+        var finalExtremaArray = [];
+        for(var i=0; i<$scope.finalMinima.length; i++) {
+          var wavelength =  parseFloat($scope.finalMinima[i][0]);
+          var T_m = parseFloat($scope.finalMinima[i][1]);
+          var T_M = parseFloat($scope.finalMaxima[i][1]);
+          finalExtremaArray.push([wavelength, T_m, T_M]);
+        }
+        $scope.finalExtremaArray = finalExtremaArray;
+        var finalExtremaTable = $('#final-extrema-points').handsontable({
+          data: finalExtremaArray,
+          contextMenu: true,
+          colWidths: [100, 100, 100],
+          colHeaders: ['wavelength', 'T minima', 'T Maxima'],
+          columns: [{type: 'numeric', format: '0.0'}, {type: 'numeric', format: '0.00'}, {type: 'numeric', format: '0.00'}]
+        });
+      }
+
 
 
       /** showRawFilmSpectrum
@@ -233,7 +322,7 @@
         // setting up substrate refracting index horizontal line
         plotOptions.grid.markings = [
           {
-            color: '#000',
+            color: '#5d5',
             lineWidth: 2,
             yaxis: { from: $scope.substrateRefractiveIndex, to: $scope.substrateRefractiveIndex }
           }
@@ -246,21 +335,35 @@
        */
       var plotExtrema = function() {
         // plotData[0] should be  film spectrum
-        plotData[1] =
-          {data: $scope.minima, label: "minima"};
-        plotData[2] = 
-          {data: $scope.maxima, label: "maxima"};
+        plotData[1] = {data: $scope.minima, label: "minima", points: {radius: 4}};
+        plotData[2] = {data: $scope.maxima, label: "maxima", points: {radius: 4}};
+        plotOptions.grid.markings[1] = 
+          { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaLeftBoundary, to: $scope.extremaLeftBoundary} };
+        plotOptions.grid.markings[2] = 
+          { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaRightBoundary, to: $scope.extremaRightBoundary} };
         Plotter.plot('extrema-plot', plotData, plotOptions);
       };
 
-      /** updateExtremaOnPlot
-       *  Updates extrema on plot '#extrema-plot'
+      /**
+       * Plots envelopes together with all previous data.
        */
-      var updateExtremaOnPlot = function() {
-        plotData[1] = {data: $scope.minima, label: "minima"};
-        plotData[2] = {data: $scope.maxima, label: "maxima"};
-        Plotter.plot('extrema-plot', plotData, plotOptions);
-      };
+      var plotEnvelopes = function() {
+        // swap envelopes with extrema so envelopes are under extrema, not over
+        plotData[3] = plotData[1];
+        plotData[4] = plotData[2];
+        plotData[1] = {data: $scope.minimaEnvelope, label: "minimaEnvelope"};
+        plotData[2] = {data: $scope.maximaEnvelope, label: "maximaEnvelope"};
+        Plotter.plot('envelopes-plot', plotData, plotOptions);
+      }
+
+      /**
+       * Plots pseudoextrema together with all previous data.
+       */
+      var plotPseudoExtrema = function() {
+        plotData[5] = {data: $scope.pseudoMinima, label: "pseudoMinima", points: {radius: 4}};
+        plotData[6] = {data: $scope.pseudoMaxima, label: "pseudoMaxima", points: {radius: 4}};
+        Plotter.plot('pseudoextrema-plot', plotData, plotOptions);
+      }
 
       /** resetCalculationProgress
        *  Sets all progress flags of $scope.calculationProgress to false.
@@ -272,6 +375,7 @@
          for(var progressFlag in $scope.calculationProgress) {
            $scope.calculationProgress[progressFlag] = false; 
          }
+         plotData = [];
        }
 
        /**
@@ -288,6 +392,16 @@
            if(progressFlag === calculationProgressPoint) {
              reachedDesiredPoint = true;
            }
+         }
+         resetPlotDataToPoint(calculationProgressPoint);
+       }
+
+       var resetPlotDataToPoint = function(calculationProgressPoint) {
+         switch (calculationProgressPoint) {
+           case 'calculatingExtrema':
+             // extrema use plotData up to plotData[2], so clear everything that is later
+             plotData = plotData.slice(0, 3)
+             break;
          }
        }
     }); // end CalculationCtrl

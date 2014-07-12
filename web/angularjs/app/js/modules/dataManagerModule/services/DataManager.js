@@ -91,6 +91,24 @@
      return deferred.promise;
     }
 
+    /** saveFileFromArray
+     *
+     *  @return Promise object with response.link = link to uploaded file
+     */
+    this.saveFileFromArray = function(dataArray, filename) {
+      var fileContents = this.convertToCsv(dataArray);
+
+      var deferred = $q.defer();
+      deferred.resolve(
+        FileManager.saveFile(filename, fileContents).then(function(result) {
+          console.log('debug', 'DataManager.saveFileFromArray(): success, result = ' + result.data);
+
+          return {link: '/savedFiles/' + filename};
+        })
+     ); 
+     return deferred.promise;
+    }
+
     this.convertToNanometer = function(filmSpectrum) {
       for(var i=0; i<filmSpectrum.length; i++) {
         filmSpectrum[i][0] = 10000000 / filmSpectrum[i][0];

@@ -15,21 +15,33 @@
 <!-- angular-file-upload plugin shim for old browsers -->
 <script src="{{ bower }}/ng-file-upload/angular-file-upload-shim.min.js"></script> 
 
+<!-- angular -->
 <script src="{{ bower }}{{ asset('angular/angular.js') }}"></script>
   <script src="{{ bower }}{{ asset('angular-resource/angular-resource.js') }}"></script>
+  <script src="{{ bower }}{{ asset('angular-route/angular-route.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/app.js') }}"></script>
+  <script src="{{ asset('angularjs/app/js/controllers/PagesCtrl.js') }}"></script>
   <!-- calculationModule -->
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/calculationModule.js') }}"></script>
+    <!-- controllers -->
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/controllers/CalculationFlowCtrl.js') }}"></script>
+    <script src="{{ asset('angularjs/app/js/modules/calculationModule/controllers/FormulasCtrl.js') }}"></script>
+    <!-- services -->
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/services/Calculus.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/services/Formulas.js') }}"></script>
     <!-- directives -->
+      <!-- pages -->
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/findingExtremaPage.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/applyingSwanepoelFormulas/applyingSwanepoelFormulasPage.js') }}"></script>
+      <!-- partials -->
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/calculationError.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/pointsTable.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/loading.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/rawExperimentalData.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/extrema.js') }}"></script>
-      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/loading.js') }}"></script>
-      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/pointsTable.js') }}"></script>
-      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/calculationError.js') }}"></script>
-
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/envelopes.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/pseudoextrema.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/finalExtremaArray.js') }}"></script>
   <!-- dataManagerModule -->
     <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/dataManagerModule.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/dataManagerModule/controllers/FilmSpectrumFileUploadCtrl.js') }}"></script>
@@ -40,10 +52,15 @@
   <!-- plotterModule -->
     <script src="{{ asset('angularjs/app/js/modules/plotterModule/plotterModule.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/plotterModule/services/Plotter.js') }}"></script>
-  <!-- angular-file-upload plugin -->
 
 <!-- jquery-csv -->
 <script src="{{ bower }}{{ asset('jquery-csv/src/jquery.csv.js') }}"></script>
+<!-- numericjs -->
+<script src="{{ bower }}{{ asset('numericjs/src/numeric.js') }}"></script>
+<!-- handsontable -->
+<script src="{{ bower }}{{ asset('handsontable/dist/jquery.handsontable.js') }}"></script>
+<script src="{{ bower }}{{ asset('numeraljs/numeral.js') }}"></script>
+<link rel="stylesheet" href="{{ bower }}/handsontable/dist/jquery.handsontable.css" type="text/css" />
 
 <!-- "flot" plotting tool -->
 <script src="{{ bower }}{{ asset('flot.tooltip/js/jquery.flot.js') }}"></script>
@@ -52,50 +69,27 @@
 </head>
 <body>
 
-<div id="calculations-output-area" ng-controller="CalculationFlowCtrl" >
-  <div film-spectrum-upload-form></div>
+<div id="site-header">
+  <div id="site-name">
+    Swanepoel Method
+  </div>
+  <div id="navbar">
+    <a href="#/finding-extrema">find extrema</a>
+    <a href="#/applying-swanepoel-formulas">apply formulas</a>
+  </div>
+</div>
 
-  <!-- loading: film spectrum file -->
-  <div loading
-    message="Uploading film spectrum file..." 
-    img-path="IMG_PATH"
-    ng-hide="calculationProgress.filmSpectrumFileUploaded"
-  ></div>
+<div id="site-body" ng-view>
+<!--
+  <div ng-controller="PagesCtrl">
+    <div finding-extrema-page ng-show="activePage == 'finding-extrema'"></div>
+    <div applying-swanepoel-formulas-page ng-show="activePage == 'applying-swanepoel-formulas'"></div>
+  </div>
+-->
+</div>
 
-  <div>Substrate refractive index: <input type="text" ng-model="substrateRefractiveIndex"</div>
-
-  <div raw-experimental-data ng-show="calculationProgress.filmSpectrumDataLoaded" class="calculation-results"></div>
-  <button class="calculation-flow" ng-click="findExtrema()">Find extrema</button>
-
-  <!-- loading: calculating extrema -->
-  <div loading
-    message="Calculating extrema..."
-    img-path="IMG_PATH"
-    ng-show="calculationProgress.calculatingExtrema && !calculationProgress.extremaFound"
-  ></div>
-
-  <!-- extrema -->
-  <div extrema ng-show="calculationProgress.extremaFound"></div>
-  
-  <button
-    class="calculation-flow"
-    ng-click="findEnvelopes()"
-    ng-show="calculationProgress.extremaFound"
-  >
-    Find Envelopes
-  </button>
-
-
-  <!-- loading: calculating envelopes -->
-  <div loading
-    message="Calculating envelopes..."
-    img-path="IMG_PATH"
-    ng-show="calculationProgress.calculatingEnvelopes && !calculationProgress.envelopesFound"
-  ></div>
-
-
-  <!-- calculation error -->
-  <div calculation-error ng-show="calculationErrorCatched"></div>
+<!-- calculation error -->
+<div calculation-error ng-show="calculationErrorCatched"></div>
 
 </div>
 

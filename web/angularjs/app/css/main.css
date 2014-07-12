@@ -4,10 +4,10 @@
 @import url("fonts.css");
 
 html, body {
-  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 body {
-  padding: 20px;
 }
 body {
   color: #333;
@@ -16,6 +16,12 @@ body {
 }
 
 /* a bit of reset styles */
+a {
+  text-decoration: none;
+}
+button:focus, input:focus {
+  outline: 0;
+}
 button::-moz-focus-inner { border: 0; }
 button:active, input:focus {
   outline: none;
@@ -31,6 +37,46 @@ button:active, input:focus {
 }
 /**************/
 
+/*** site-header ***/
+#site-header {
+  height: 45px;
+  background-color: black;
+  overflow: hidden;
+}
+#site-name {
+  display: inline-block;
+  vertical-align: top;
+  color: #0586a4;
+  letter-spacing: 2px;
+  font-size: 17px;
+  margin-left: 40px;
+  margin-top: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+/*** navbar ***/
+#navbar {
+  vertical-align: top;
+  display: inline-block;
+  height: 100%;
+  margin-left: 200px;
+  float: right;
+}
+#navbar a {
+  display: inline-block;
+  height: 100%;
+  line-height: 45px;
+  padding: 0 20px 0 20px;
+  margin: 0;
+  font-size: 16px;
+  color: white;
+  border-left: solid #002139 3px;
+}
+/*******************/
+#site-body {
+  padding: 20px;
+}
+
 .calculation-error {
   color: #b10490;
 }
@@ -41,7 +87,7 @@ button:active, input:focus {
   margin: 2em 0 2em 0;
 }
 button.calculation-flow {
-  background-color: #40b0ff;
+  background-color: #2090ff;
   padding: .5em 1em .5em 1em;
   margin: .3em;
   color: white;
@@ -50,6 +96,9 @@ button.calculation-flow {
   border: 0;
   border-radius: 10px;
   cursor: pointer;
+}
+button.download {
+  background-color: #a560aa;
 }
 input[type="text"] {
   border: 0;

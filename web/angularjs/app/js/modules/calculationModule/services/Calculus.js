@@ -23,6 +23,7 @@
      *  Example: extrema = {minima: [[0, 1], [2, 3], ...]], maxima: [[3, 3], [4, 9]]}
      */
     this.findExtrema = function(data, options, callback) {
+      console.log('debug', 'Calculus.findExtrema() called, data.length = ' + data.length);
       // read options
       var leftBoundary = options.leftBoundary ? options.leftBoundary : 0; 
       var rightBoundary = options.rightBoundary ? options.rightBoundary : data.length; 
@@ -30,10 +31,12 @@
 
       // slice data considering boundaries
       data = sliceConsideringBoundaries(data, leftBoundary, rightBoundary);
+      console.log('debug', 'Calculus.findExtrema(): data after slicing: data.length = ' + data.legnth);
 
       // now find extrema by calling private method 
       //console.log('debug', 'findExtrema(): right boundary = ' + rightBoundary + ', sliced data = ' + data);
       var extrema = _findExtrema(data, yThreshold);
+      console.log('debug', 'Calculus.findExtrema(): extrema found. Minima = ' + extrema.minima);
       // and pass it to callback
       callback(extrema);
     };
@@ -45,15 +48,58 @@
      *
      *  @return envelope points are returned as callback argument, in 2d array format.
      */
-    this.findEnvelope = function(data, callback) {
-      var envelope;
-      
-      callback(envelope); 
+    this.findEnvelope = function(data, options, callback) {
+      var envelopeStartX = options.envelopeStartX ? options.envelopeStartX : data[0][0];
+      var envelopeEndX = options.envelopeEndX ? options.envelopeEndX : data[data.length-1][0];
+      var x = [];
+      var y = [];
+      for(var i=0; i<data.length; i++) {
+        x[i] = data[i][0]; 
+        y[i] = data[i][1]; 
+      }
+      console.log('debug', 'Calculus.findEnvelope(): x = ' + x + ', y = ' + y);
+      var spline = numeric.spline(x, y);
+      var SPLINE_POINTS_NUMBER = 100;
+      var splineX = numeric.linspace(envelopeStartX, envelopeEndX, SPLINE_POINTS_NUMBER);
+
+      var envelopeArray = numeric.transpose([splineX, spline.at(splineX)]);
+
+      callback(envelopeArray); 
     };
+
+    /**
+     *  Finds intersection points of vertical lines through extrema and the envelope;
+     */
+    this.findPseudoExtrema = function(extrema, envelope, callback) {
+      var pseudoExtrema = [];
+      for(var i=0; i<extrema.length; i++) {
+        var x = extrema[i][0];
+        var y = findValueNear(envelope, x);
+        pseudoExtrema.push([x, y]); 
+      }
+      callback(pseudoExtrema);
+    }
   }); // end Calculus service
+
+
 
   /********** Private methods *************/
 
+  /**
+   *  Finds y-value at x closest to @param x
+   *
+   *  @return Number
+   */
+  var findValueNear = function(pointsArray, x) {
+    var pointsArrayX = extractXCoordinates(pointsArray);
+    var indexOfClosestX = indexOfClosestNumber(pointsArrayX, x);
+    return pointsArray[indexOfClosestX][1];
+  }
+
+    /**
+     *  No y-threshold version of _findExtrema
+     *  May be used if the y-threshold version becomes to buggy / complicated
+     */
     var _findExtremaSimple = function(data) {
 
       var extrema = {minima: [], maxima: []};
@@ -80,9 +126,11 @@
 
   /** 
    *  Finds extrema in @param data and returns it as {minima: array, maxima: array}
+   *
+   *  @param yThreshold y-threshold of extrema sensivity.
    */
   var _findExtrema = function(data, yThreshold) {
-    //console.log('debug', '_findExtrema(): data = ' + data);
+    console.log('debug', 'Calculus._findExtrema(): data.length = ' + data.length);
 
     /**************** auxilary functions ******************/
 
@@ -107,7 +155,7 @@
           extrema.maxima.push(firstExtremum); 
         }
         firstExtremumWasAddedToArray = true;
-        console.log('debug', 'added first extremum to array');
+        //console.log('debug', 'added first extremum to array');
       }
     }
 
@@ -198,14 +246,19 @@
    *  Slice data considering boundaries
    */
   var sliceConsideringBoundaries = function(data, leftBoundary, rightBoundary) {
+      console.log('debug',
+      'Calculus.findExtrema().sliceConsideringBoundaries(): data.length = ' + data.length
+      + ', leftBoundary = ' + leftBoundary + ', rightBoundary = ' + rightBoundary);
       // find closest to boundaries X-coordinates
       var xCoordinates = extractXCoordinates(data); 
       //console.log('debug', 'xCoordinates: ' + xCoordinates);
 
       var leftBoundaryIndex = indexOfClosestNumber(xCoordinates, leftBoundary); 
       var rightBoundaryIndex = indexOfClosestNumber(xCoordinates, rightBoundary); 
-      console.log('debug', 'leftBoundaryIndex = ' + leftBoundaryIndex);
-      console.log('debug', 'leftBoundaryValue = ' + xCoordinates[leftBoundaryIndex]);
+      console.log('debug', 'Calculus.findExtrema().slicingData: leftBoundaryIndex = ' + leftBoundaryIndex);
+      console.log('debug', 'Calculus.findExtrema().slicingData: leftBoundaryValue = ' + xCoordinates[leftBoundaryIndex]);
+      console.log('debug', 'Calculus.findExtrema().slicingData: rightBoundaryIndex = ' + rightBoundaryIndex);
+      console.log('debug', 'Calculus.findExtrema().slicingData: rightBoundaryValue = ' + xCoordinates[rightBoundaryIndex]);
 
       // now slice data considering boundaries
       var slicedData= data.slice(leftBoundaryIndex, rightBoundaryIndex);

@@ -1,0 +1,97 @@
+  <div film-spectrum-upload-form></div>
+
+  <!-- loading: film spectrum file -->
+  <div loading
+    message="Uploading film spectrum file..." 
+    img-path="IMG_PATH"
+    ng-hide="calculationProgress.filmSpectrumFileUploaded"
+  ></div>
+
+  <div>Substrate refractive index: <input type="text" ng-model="substrateRefractiveIndex"</div>
+
+  <div raw-experimental-data ng-show="calculationProgress.filmSpectrumDataLoaded" class="calculation-results"></div>
+  <button class="calculation-flow" ng-click="findExtrema()">Find extrema</button>
+
+  <!-- loading: calculating extrema -->
+  <div loading
+    message="Calculating extrema..."
+    img-path="IMG_PATH"
+    ng-show="calculationProgress.calculatingExtrema && !calculationProgress.extremaFound"
+  ></div>
+
+  <!-- extrema -->
+  <div extrema ng-show="calculationProgress.extremaFound"></div>
+  
+  <button
+    class="calculation-flow"
+    ng-click="findEnvelopes()"
+    ng-show="calculationProgress.extremaFound"
+  >
+    Find Envelopes
+  </button>
+
+
+  <!-- loading: calculating envelopes -->
+  <div loading
+    message="Calculating envelopes..."
+    img-path="IMG_PATH"
+    ng-show="calculationProgress.calculatingEnvelopes && !calculationProgress.envelopesFound"
+  ></div>
+
+  <!-- envelopes -->
+  <div envelopes ng-show="calculationProgress.envelopesFound"></div>
+
+
+  <!-- button: find pseudoextrema -->
+  <button
+    class="calculation-flow"
+    ng-click="findPseudoExtrema()"
+    ng-show="calculationProgress.envelopesFound"
+  >
+    Find PseudoExtrema
+  </button>
+
+  <!-- loading: calculating pseudo extrema -->
+  <div loading
+    message="Calculating PseudoExtrema..."
+    img-path="IMG_PATH"
+    ng-show="calculationProgress.calculatingPseudoExtrema && !calculationProgress.pseudoExtremaFound"
+  ></div>
+
+  <!-- pseudoextrema -->
+  <div pseudoextrema ng-show="calculationProgress.pseudoExtremaFound"></div>
+
+  <!-- finalExtremaArray -->
+  <div final-extrema-array ng-show="calculationProgress.pseudoExtremaFound"></div>
+
+
+  <div>
+    <!-- button: download final extrema table -->
+    <button
+      class="calculation-flow download"
+      ng-click="saveFinalExtremaTable()"
+      ng-show="calculationProgress.pseudoExtremaFound"
+    >
+      Get download link for final extrema table
+    </button>
+
+    <a target="_blank" href="{[{finalExtremaFileLink}]}" ng-show="finalExtremaFileReady">
+      finalExtrema.csv
+    </a>
+  </div>
+
+  <!-- loading: Saving final extrema file -->
+  <div loading
+    message="Saving final extrema file"
+    img-path="IMG_PATH"
+    ng-show="savingFinalExtremaFile && !finalExtremaFileReady"
+  ></div>
+
+  <!-- button: continue calculations -->
+  <button
+    class="calculation-flow"
+    ng-click="continueToApplyingSwanepoelFormulas()"
+    ng-show="calculationProgress.pseudoExtremaFound"
+  >
+    Continue to applying Swanepoel formulas 
+  </button>
