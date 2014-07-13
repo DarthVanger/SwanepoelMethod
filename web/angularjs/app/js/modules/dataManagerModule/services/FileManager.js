@@ -36,7 +36,7 @@
      *
      *  @return Promise object
      */
-    this.saveFile = function(filename, fileContents) {
+    this.saveFile = function(filename, fileContents, directory) {
       var deferred = $q.defer();
       deferred.resolve(
         $http({
@@ -44,7 +44,8 @@
           method: "POST",
           data: {
             'filename': filename,
-            'fileContents': fileContents 
+            'fileContents': fileContents,
+            'directory': directory 
           },
           headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data, status, headers, config) {

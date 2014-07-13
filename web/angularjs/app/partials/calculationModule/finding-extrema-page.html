@@ -87,9 +87,10 @@
     ng-show="savingFinalExtremaFile && !finalExtremaFileReady"
   ></div>
 
+  <br />
   <!-- button: continue calculations -->
-  <button
-    class="calculation-flow"
+  <a href="#/applying-swanepoel-formulas"
+    class="calculation-flow-button"
     ng-click="continueToApplyingSwanepoelFormulas()"
     ng-show="calculationProgress.pseudoExtremaFound"
   >

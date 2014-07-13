@@ -120,6 +120,7 @@
          */
         $scope.$watch('calculationProgress.extremaFound', function(newVal) {
           if(newVal) {
+            console.log('debug', '$watch(extremaFound): plotting extrema');
             plotExtrema();  
           }
         });
@@ -158,9 +159,11 @@
               rightBoundary: $scope.extremaRightBoundary,
               yThreshold: $scope.extremaYThreshold
             }, function(extrema) {
+              console.log('debug', '$scope.recalculateExtrema(): extrema found');
               $scope.minima = extrema.minima;
               $scope.maxima = extrema.maxima;
               $scope.calculationProgress.extremaFound = true;
+              plotExtrema();  
             });
           } catch(error) {
             console.log('debug', 'catched calculationError, message = ' + error.message);
@@ -241,8 +244,9 @@
           $scope.savingFinalExtremaFile = true;
           var handsontable = $('#final-extrema-points').data('handsontable');
           var finalExtremaArray = handsontable.getData();
+          DataManager.data.extrema = finalExtremaArray;
           $scope.finalExtremaArray = finalExtremaArray;
-          DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv').then(function(result) {
+          DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv', 'extrema').then(function(result) {
             console.log('debug', '$scope.downloadFinalExtremaTable(): save file success, link = ' + result.link);
             $scope.finalExtremaFileLink = result.link;
             $scope.finalExtremaFileReady = true;

@@ -1,0 +1,26 @@
+  <div ng-controller="ExtremaFileUploadCtrl">
+    <div class="small-font">
+      File format should be csv containing data in this order: wavelength, T_min, T_max
+    </div>
+    <button class="calculation-flow" onclick="document.getElementById('upload-field').click();">
+      Upload extrema file
+    </button>
+    <div id="upload-wrap">
+      <input type="file" id="upload-field" ng-file-select="onFileSelect($files)" >
+    </div>
+
+    <!-- loading: uploading file -->
+    <div loading
+      message="Uploading extrema file..."
+      img-path="IMG_PATH"
+      ng-show="uploadingFile"
+    ></div>
+
+    <div ng-if="fileUploadSuccess">
+      {[{ uploadedFileName }]} was successefully uploaded
+    </div>
+    <div ng-if="fileUploadError">
+      При загрузке файла произошла ошибка сервера :(
+    </div>
+  </div>
+

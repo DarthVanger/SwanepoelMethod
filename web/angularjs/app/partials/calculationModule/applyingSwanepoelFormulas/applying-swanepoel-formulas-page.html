@@ -1,4 +1,23 @@
-Applying swanepoel formulas page :)
-<h2>Extrema table</h2>
-<div id="extrema-table-formulas-page"></div>
-<br />
+<div extrema-upload-form></div>
+
+<!-- loading: loading extrema data -->
+<div loading
+  message="Loading extrema data"
+  img-path="IMG_PATH"
+  ng-hide="calculationProgress.extremaReady"
+></div>
+
+<div ng-show="calculationProgress.extremaReady">
+
+
+  <h2>Extrema table</h2>
+  <div id="extrema-table-formulas-page"></div>
+
+  <button
+    class="calculation-flow save"
+    ng-click="updateExtremaFromTable()"
+  >
+    Apply table edits 
+  </button>
+
+</div>

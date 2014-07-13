@@ -24,17 +24,27 @@ class DefaultController extends Controller
         $form = $this->container->get('form.factory')
             ->createNamedBuilder(null, 'form', null, array('csrf_protection' => false))
             ->add('file','file')
+            ->add('directory','text')
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+
+            // choose sub directory 
+            $data = $form->getData();
+            if (isset($data['directory'])) {
+               $uploadSubFolder = $data['directory'];
+            } else {
+                $uploadSubFolder = 'misc';
+            }
+            $dir = 'upload/' . $uploadSubFolder . '/';
+
             $file = $form['file']->getData();
-            $dir = 'upload/';
             $filename = $file->getClientOriginalName();
             $file->move($dir, $filename);
 
-            // replace 'lastUploaded' file with the newly uploaded one
+            // copy file to 'lastUploaded.csv'
             try {
               $fs = new Filesystem();
               $fs->copy($dir.$filename, $dir.'lastUploaded.csv', true);
@@ -80,10 +90,18 @@ class DefaultController extends Controller
     }
 
     public function saveFileAction(Request $request) {
-      $dir = 'savedFiles/';
       $jsonData = $request->getContent();
       $data = json_decode($jsonData);
+      if (isset($data->directory)) {
+        $dir = 'upload/' . $data->directory . '/';
+      } else {
+        $dir = 'upload/savedFiles/';
+      }
+
       file_put_contents($dir . $data->filename, $data->fileContents);
-      return new Response($data->fileContents);
+      // put a copy also
+      file_put_contents($dir . 'lastUploaded.csv', $data->fileContents);
+
+      return new Response('directory = ' . $data->directory);
     }
 }

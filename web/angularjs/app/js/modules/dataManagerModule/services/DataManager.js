@@ -9,9 +9,13 @@
   app.service('DataManager', function($q, FileManager) {
     var self = this;
 
-    this.experimentalData = {
-      points: 'not loaded yet',
-      isLoaded: false
+    this.data = {
+      /**
+       *  Extrema for applying formulas in format
+       *  [wavelength, T_min, T_max]
+       *  Is updated when extrema calculations are saved 
+       */
+      extrema: null
     };
 
     /**
@@ -23,16 +27,6 @@
     this.parseCsvString = function(csvString) {
         var parsedData = $.csv.toArrays(csvString);
 
-        //var rows = csvString.split(/\r\n/); 
-        //var parsedData = [];
-        //for(var i=0; i<rows.length; i++) {
-        //  parsedData.push(rows[i].split(/,/)); 
-        //}
-
-        //for(var i=0; i<parsedData.length; i++) {
-        //  parsedData[i][0] = parseInt(parsedData[i][0]);
-        //  parsedData[i][1] = parseInt(parsedData[i][1]);
-        //}
         console.log('debug', 'parseCsvString(): parsing ok'); 
         return parsedData;
     }
@@ -74,6 +68,28 @@
       return deferred.promise;
     };
 
+    /**
+     *  Gets last uploaded file from server,
+     *  parses it to double-array,
+     *  and returns via promise object.
+     *
+     *  @return Promise object with 2d array experimental data in result.data
+     */
+    this.getLastUploadedExtrema = function() {
+      console.log('debug', 'getLastUploadedExtrema called');
+      var deferred = $q.defer();
+      deferred.resolve(
+        FileManager.getFileContents('extrema/lastUploaded.csv').then(function(response) {
+           //console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success, response.data: ' + response.data);
+           console.log('debug', 'ExperimentalDataManager::getLastUsedExtrema: success');
+           var fileContents = response.data;
+           var extrema = self.parseCsvString(fileContents);
+           return {data: extrema};
+        })
+      );
+      return deferred.promise;
+    };
+
     /** loadFilmSpectrumFromFile
      *
      *  @return Promise object with response.data = filmSpectrum in 2d array format
@@ -91,19 +107,38 @@
      return deferred.promise;
     }
 
+    /** extractDataFromFile 
+     *
+     *  @return Promise object with response.data = 2d array of parsed csv file
+     */
+    this.extractDataFromFile = function(filepath) {
+      var deferred = $q.defer();
+      deferred.resolve(
+        FileManager.getFileContents(filepath).then(function(result) {
+          var fileContents = result.data;
+          var dataArray = self.parseCsvString(fileContents);
+          return {data: dataArray};
+        })
+     ); 
+     return deferred.promise;
+    }
+
     /** saveFileFromArray
      *
      *  @return Promise object with response.link = link to uploaded file
      */
-    this.saveFileFromArray = function(dataArray, filename) {
+    this.saveFileFromArray = function(dataArray, filename, directory) {
       var fileContents = this.convertToCsv(dataArray);
 
       var deferred = $q.defer();
       deferred.resolve(
-        FileManager.saveFile(filename, fileContents).then(function(result) {
+        FileManager.saveFile(filename, fileContents, directory).then(function(result) {
           console.log('debug', 'DataManager.saveFileFromArray(): success, result = ' + result.data);
 
-          return {link: '/savedFiles/' + filename};
+          var link = directory ? 
+            '/upload/' + directory + '/' + filename :
+            '/upload/savedFiles/' + filename;
+          return {'link': link};
         })
      ); 
      return deferred.promise;
