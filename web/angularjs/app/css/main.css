@@ -145,8 +145,14 @@ ul.data-points li div.row1 {
 }
 .points-table-name {
   font-size: 1.25em;
+  color: #555;
+  margin: .5em 0 .5em 0;
+}
+.points-table-show-hide-button {
+  font-size: 1.25em;
   color: #b8255d;
   margin: .5em 0 .5em 0;
+  cursor: pointer;
 }
 .vertical-margins {
   margin: 1em 0 1em 0;

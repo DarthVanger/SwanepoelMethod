@@ -7,7 +7,7 @@
     ng-hide="calculationProgress.filmSpectrumFileUploaded"
   ></div>
 
-  <div>Substrate refractive index: <input type="text" ng-model="substrateRefractiveIndex"</div>
+  <div>Substrate T: <input type="text" ng-model="substrateRefractiveIndex"</div>
 
   <div raw-experimental-data ng-show="calculationProgress.filmSpectrumDataLoaded" class="calculation-results"></div>
   <button class="calculation-flow" ng-click="findExtrema()">Find extrema</button>
@@ -96,3 +96,7 @@
   >
     Continue to applying Swanepoel formulas 
   </button>
+
+  <!-- calculation error -->
+  <div calculation-error ng-show="calculationErrorCatched"></div>
+

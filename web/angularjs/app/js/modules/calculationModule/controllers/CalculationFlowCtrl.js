@@ -21,6 +21,13 @@
         tooltip: true
       };
 
+      var handsontableOptions = {
+        contextMenu: true,
+        colWidths: [100, 100],
+        colHeaders: ['wavelength', 'T'],
+        columns: [{type: 'numeric', format: '0.0'}, {type: 'numeric', format: '0.00'},]
+      };
+
       //var plotOptions = {
       //  grid: {
       //    hoverable: true,
@@ -121,7 +128,8 @@
         $scope.$watch('calculationProgress.extremaFound', function(newVal) {
           if(newVal) {
             console.log('debug', '$watch(extremaFound): plotting extrema');
-            plotExtrema();  
+            showExtremaTable();
+            plotExtrema();
           }
         });
 
@@ -163,13 +171,24 @@
               $scope.minima = extrema.minima;
               $scope.maxima = extrema.maxima;
               $scope.calculationProgress.extremaFound = true;
-              plotExtrema();  
+              plotExtrema();
+              showExtremaTable();
             });
           } catch(error) {
             console.log('debug', 'catched calculationError, message = ' + error.message);
             $scope.$broadcast('CalculationError', error);
           }
         };
+
+        $scope.updateExtremaFromTables = function() {
+          resetCalculationProgressTo('extremaFound');
+          var handsontable = $('#minima-table').data('handsontable');
+          $scope.minima = DataManager.filterUserInput(handsontable.getData());
+          var handsontable = $('#maxima-table').data('handsontable');
+          $scope.maxima = DataManager.filterUserInput(handsontable.getData());
+          showExtremaTable(); // updates the table
+          plotExtrema(); // updates the plot
+        }
 
         /********* Calculation Step 2 - find envelopes ***************/
 
@@ -186,6 +205,7 @@
          *  Finds envelopes and sends them to $scope.
          */
         $scope.findEnvelopes = function() {
+          $scope.updateExtremaFromTables();
           console.log('debug', '$scope.findEnvelopes called');
           $scope.calculationProgress.calculatingEnvelopes = true;
           var envelopeStartX = Math.min($scope.minima[0][0], $scope.maxima[0][0]);
@@ -222,6 +242,7 @@
         $scope.$watch('calculationProgress.pseudoExtremaFound', function(newVal) {
           if(newVal) {
             plotPseudoExtrema();
+            showPseudoExtremaTable();
             generateFinalExtremaTable();
           }
         });
@@ -243,7 +264,7 @@
         $scope.saveFinalExtremaTable = function() {
           $scope.savingFinalExtremaFile = true;
           var handsontable = $('#final-extrema-points').data('handsontable');
-          var finalExtremaArray = handsontable.getData();
+          var finalExtremaArray = DataManager.filterUserInput(handsontable.getData());
           DataManager.data.extrema = finalExtremaArray;
           $scope.finalExtremaArray = finalExtremaArray;
           DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv', 'extrema').then(function(result) {
@@ -332,7 +353,23 @@
           }
         ];
         Plotter.plot('experimental-data', plotData, plotOptions);
+        handsontableOptions.data = $scope.filmSpectrum;
+        $('#raw-film-spectrum-table').handsontable(handsontableOptions);
       };
+
+      /**
+       *  Shows extrema table using handsontable
+       */
+      var showExtremaTable = function() {
+        handsontableOptions.data = $scope.minima;
+        handsontableOptions.colHeaders = ['wavelength', 'T_min'];
+        console.log('debug', 'showExtremaTable(): handsontableOptions.data = ' + handsontableOptions.data);
+        $('#minima-table').handsontable(handsontableOptions);
+        handsontableOptions.data = $scope.maxima;
+        handsontableOptions.colHeaders = ['wavelength', 'T_max'];
+        $('#maxima-table').handsontable(handsontableOptions);
+      }
+
 
       /** plotExtrema
        *  Plots extrema to '#extrema-plot'
@@ -367,6 +404,19 @@
         plotData[5] = {data: $scope.pseudoMinima, label: "pseudoMinima", points: {radius: 4}};
         plotData[6] = {data: $scope.pseudoMaxima, label: "pseudoMaxima", points: {radius: 4}};
         Plotter.plot('pseudoextrema-plot', plotData, plotOptions);
+      }
+
+      /**
+       *  Shows pseudoextrema table using handsontable
+       */
+      var showPseudoExtremaTable = function() {
+        handsontableOptions.data = $scope.pseudoMinima;
+        handsontableOptions.colHeaders = ['wavelength', 'T_min'];
+        console.log('debug', 'showExtremaTable(): handsontableOptions.data = ' + handsontableOptions.data);
+        $('#pseudominima-table').handsontable(handsontableOptions);
+        handsontableOptions.data = $scope.pseudoMaxima;
+        handsontableOptions.colHeaders = ['wavelength', 'T_max'];
+        $('#pseudomaxima-table').handsontable(handsontableOptions);
       }
 
       /** resetCalculationProgress

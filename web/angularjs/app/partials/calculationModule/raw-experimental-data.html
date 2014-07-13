@@ -1,3 +1,6 @@
-<div points-table points="filmSpectrum" name="Film Spectrum"></div>
+<div ng-click="showRawFilmSpectrumTable = !showRawFilmSpectrumTable" class="points-table-show-hide-button">
+  show/hide film spectrum data table
+</div>
+<div id="raw-film-spectrum-table" ng-show="showRawFilmSpectrumTable"></div>
 <div id="experimental-data" class="data-plot"></div>
 

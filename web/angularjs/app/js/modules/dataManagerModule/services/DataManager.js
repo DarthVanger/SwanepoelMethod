@@ -31,6 +31,63 @@
         return parsedData;
     }
 
+    /**
+     *  Sorts data points by X in asc order.
+     */
+    this.sort = function(pointsArray) {
+      pointsArray.sort(function(x,y) {
+        return x[0] - y[0];
+      });
+      return pointsArray;
+    }
+
+    /**
+     *  Filters user input after editing data in handsontable.
+     *  Removes nulls, sorts the data.
+     */
+    this.filterUserInput = function(pointsArray) {
+      var badEntriesIndexes = [];
+      for(var i=0; i<pointsArray.length; i++) {
+        if (
+          pointsArray[i] == null
+          || pointsArray[i][0] == null
+          || pointsArray[i][1] == null
+        ) {
+          console.log('debug', 'DataManager.filterUserInput(): found null');
+          badEntriesIndexes.push(i);
+        }
+      }
+      console.log('debug', 'DataManager.filterUserInput(): bad row indexes = ' + badEntriesIndexes);
+      for(var i=0; i<badEntriesIndexes.length; i++) {
+        console.log('debug', 'DataManager.filterUserInput(): removing bad row, index = ' + badEntriesIndexes[i]);
+        pointsArray.splice(badEntriesIndexes[i], 1);
+      }
+      this.sort(pointsArray);
+      return pointsArray;
+    }
+
+    /**
+     *  Returns 1d array of X coordinates from 2d array of points
+     */
+    var extractXCoordinates = function(pointsArray) {
+      xArray = [];
+      for(var i=0; i<pointsArray.length; i++) {
+        xArray.push(pointsArray[i][0]); 
+      }
+      return xArray;
+    }
+
+    /**
+     *  Returns 1d array of X coordinates from 2d array of points
+     */
+    var extractYCoordinates = function(pointsArray) {
+      yArray = [];
+      for(var i=0; i<pointsArray.length; i++) {
+        yArray.push(pointsArray[i][1]); 
+      }
+      return yArray;
+    }
+
     this.convertToCsv = function(data) {
       var csv = '';
       for(var i=0; i<data.length; i++) {
