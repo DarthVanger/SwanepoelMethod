@@ -18,6 +18,7 @@
       lines: { show: false },
       points: { show: true, fill: true, radius: 1, symbol: 'circle' },
       grid: { hoverable: true },
+      legend: { position: 'nw' },
       tooltip: true
     };
 

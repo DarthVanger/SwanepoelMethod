@@ -9,6 +9,10 @@
 
 <div ng-show="calculationProgress.extremaReady">
 
+  <div>
+    <div>Substrate Transmission: <input type="text" ng-model="substrateTransmission" /></div>
+    <div>Substrate Refractive index: {[{substrateRefractiveIndex | number: 2}]}</div>
+  </div>
 
   <h2>Extrema table</h2>
   <div id="extrema-table-formulas-page"></div>
@@ -19,5 +23,78 @@
   >
     Apply table edits 
   </button>
+  <br />
+
+  <div class="plot-container">
+    <h2>Extrema plot</h2>
+    <div id="extrema-plot-formulas-page" class="data-plot"></div>
+  </div>
+
+  <button
+    class="calculation-flow"
+    ng-click="calculateRefractiveIndexFirstApproximation()"
+  >
+    Calculate refractive index first approximation
+  </button>
+  <br />
+
+  <div class="table-container" ng-show="calculationProgress.refractiveIndexFirstApproximationReady">
+    <h2>Refractive index first approximation</h2>
+    <div id="refractive-index-first-approximation"></div>
+  </div>
+  <br />
+
+  <button
+    class="calculation-flow"
+    ng-click="calculateFilmThicknessFirstApproximation()"
+    ng-show="calculationProgress.refractiveIndexFirstApproximationReady"
+  >
+    Calculate film thickness first approximation
+  </button>
+  <br />
+
+  <!-- film-thickness-first-approximation -->
+  <div ng-show="calculationProgress.filmThicknessFirstApproximationReady">
+    <div class="table-container" >
+      <h2>Film thickness first approximation</h2>
+      <div class="small-font">
+        You can delete a few first d_1 before calculating average, if needed
+      </div>
+      <div id="film-thickness-first-approximation"></div>
+    </div>
+    <br />
+    
+    <!-- button: apply table edits -->
+    <button
+      class="calculation-flow save"
+      ng-click="updateCalculationResultsFromTable('film-thickness-first-approximation')"
+    >
+      Apply table edits 
+    </button>
+    <br />
+
+    <button
+      class="calculation-flow"
+      ng-click="calculateAverageFilmThicknessFirstApproximation()"
+      ng-show="calculationProgress.refractiveIndexFirstApproximationReady"
+    >
+     Calculate average film thickness first approximation
+    </button>
+    <br />
+
+    <div>
+      d_1 avrg: {[{averageFilmThicknessFirstApproximation}]}
+      d_1 st. dev.: {[{filmThicknessFirstApproximationError}]}
+
+    </div>
+  </div> <!-- end film-thickness-first-approximation -->
+
+
+  <!-- debug -->
+  <h2> Debug </h2>
+  N: {[{N}]} <hr />
+  n_1: {[{refractiveIndexFirstApproximation}]} <hr />
+  calculation results: {[{calculationResultsArray}]} <hr />
+  d_1 : {[{filmThicknessFirstApproximation}]} <hr />
 
 </div>

@@ -17,7 +17,7 @@
         lines: { show: false},
         points: { show: true, fill: true, radius: 1, symbol: 'circle' },
         grid: { hoverable: true },
-        legend: { position: 'sw' },
+        legend: { position: 'nw' },
         tooltip: true
       };
 
@@ -63,7 +63,7 @@
       $scope.extrema = 'not calculated yet';
       $scope.extremaLeftBoundary = 600;
       $scope.extremaRightBoundary;
-      $scope.extremaYThreshold = 5;
+      $scope.extremaYThreshold = .5;
 
       /******************* Controller logic **************************/
       
@@ -264,8 +264,9 @@
         $scope.saveFinalExtremaTable = function() {
           $scope.savingFinalExtremaFile = true;
           var handsontable = $('#final-extrema-points').data('handsontable');
-          var finalExtremaArray = DataManager.filterUserInput(handsontable.getData());
+          var finalExtremaArray = handsontable.getData();
           DataManager.data.extrema = finalExtremaArray;
+          DataManager.data.filmSpectrum = $scope.filmSpectum;
           $scope.finalExtremaArray = finalExtremaArray;
           DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv', 'extrema').then(function(result) {
             console.log('debug', '$scope.downloadFinalExtremaTable(): save file success, link = ' + result.link);
@@ -293,7 +294,7 @@
        *  Loads last uploaded file data as initial data to show instead of blank page.
        */
       function loadInitialExperimentalData() {
-        var INITIAL_SUBSTRATE_REFRACTIVE_INDEX = 92;
+        var INITIAL_SUBSTRATE_REFRACTIVE_INDEX = .92;
 
         console.log('debug', 'loadInitialExperimentalData() called');
         DataManager.getLastUploadedFilmSpectrum().then(function(result) {
@@ -314,8 +315,8 @@
        *  and shows it using handsontable.
        */ 
       var generateFinalExtremaTable = function() {
-        $scope.finalMinima = $scope.minima.concat($scope.pseudoMinima);
-        $scope.finalMaxima = $scope.maxima.concat($scope.pseudoMaxima);
+        $scope.finalMinima = DataManager.sort($scope.minima.concat($scope.pseudoMinima));
+        $scope.finalMaxima = DataManager.sort($scope.maxima.concat($scope.pseudoMaxima));
         var finalExtremaArray = [];
         for(var i=0; i<$scope.finalMinima.length; i++) {
           var wavelength =  parseFloat($scope.finalMinima[i][0]);
@@ -412,6 +413,7 @@
       var showPseudoExtremaTable = function() {
         handsontableOptions.data = $scope.pseudoMinima;
         handsontableOptions.colHeaders = ['wavelength', 'T_min'];
+        handsontableOptions.cells = function(r,c, prop) { return {readOnly: true}; };
         console.log('debug', 'showExtremaTable(): handsontableOptions.data = ' + handsontableOptions.data);
         $('#pseudominima-table').handsontable(handsontableOptions);
         handsontableOptions.data = $scope.pseudoMaxima;
