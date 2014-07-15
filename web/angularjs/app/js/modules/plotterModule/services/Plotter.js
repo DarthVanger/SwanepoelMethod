@@ -19,7 +19,10 @@
       points: { show: true, fill: true, radius: 1, symbol: 'circle' },
       grid: { hoverable: true },
       legend: { position: 'nw' },
-      tooltip: true
+      tooltip: true,
+      tooltipOpts: {
+          content: "%s | X: %x.2 | Y: %y.2"
+      }
     };
 
 

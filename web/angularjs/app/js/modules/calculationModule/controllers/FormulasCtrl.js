@@ -59,9 +59,13 @@
       /**
        * auxilary calculation variables
        */
-      $scope.N = [];
+       $scope.firstExtremumIs = 'minimum';
 
       /******** Calculation Step 0: waiting for input extrema data ***********/
+
+      $(document).ready(function() {
+        bindListenersToExtremaPlot(); 
+      });
 
       /**
        *  Set extremaReady flag if extrema are ready.
@@ -132,6 +136,7 @@
         resetCalculationProgressTo('extremaAndSpectrumReady');
         var handsontable = $('#extrema-table-formulas-page').data('handsontable');
         $scope.extrema = DataManager.filterUserInput(handsontable.getData());
+        DataManager.saveFileFromArray($scope.extrema, 'tempExtrema.csv', 'extrema');
         console.log('debug', 'FormulasCtrl: saving extrema table edits ok');
         showExtremaTable();
         plotExtrema();
@@ -162,6 +167,9 @@
         showFilmThicknessFirstApproximationTable();
       }
 
+      /**
+       *  Update calculationResultsArray after user edits in handsontable
+       */
       $scope.updateCalculationResultsFromTable = function(tableId) {
         //resetCalculationProgressTo('');
         var handsontable = $('#' + tableId).data('handsontable');
@@ -169,13 +177,57 @@
         console.log('debug', 'FormulasCtrl: saving '+ tableId + ' table edits ok');
       }
 
+      /**
+       *  Calculate average film thickness first approximation
+       */
       $scope.calculateAverageFilmThicknessFirstApproximation = function () {
         $scope.updateCalculationResultsFromTable('film-thickness-first-approximation');
         var d_1 = DataManager.extractColumnFromTable($scope.calculationResultsArray, 4);
         //console.log('debug', 'd_1 = ' + d_1);
         $scope.averageFilmThicknessFirstApproximation = Statistics.average(d_1);
         $scope.filmThicknessFirstApproximationError = Statistics.standardDeviation(d_1);
+        $scope.calculationProgress.averageFilmThicknessFirstApproximationReady = true;
       }
+
+      /**
+       *  Calculate interference orders
+       */
+       $scope.calculateInterferenceOrders = function() {
+         $scope.interferenceOrders =
+           Formulas.interferenceOrders($scope.calculationResultsArray, $scope.averageFilmThicknessFirstApproximation);
+         $scope.calculationResultsArray = DataManager.joinColumnToTable($scope.calculationResultsArray, $scope.interferenceOrders);
+
+         $scope.calculationProgress.interferenceOrdersReady = true;
+         showInterferenceOrdersTable();
+       }
+
+       /**
+        * Find exact interference orders
+        */
+       $scope.findExactInterferenceOrders = function() {
+         $scope.exactInterferenceOrders =
+           Formulas.exactInterferenceOrders($scope.interferenceOrders, $scope.firstExtremumIs);
+
+         $scope.calculationResultsArray =
+           DataManager.joinColumnToTable($scope.calculationResultsArray, $scope.exactInterferenceOrders);
+
+         $scope.calculationProgress.exactInterferenceOrdersReady = true;
+         showExactInterfereceOrdersTable();
+       }
+
+       /**
+        * Find final film thickness
+        */
+        $scope.findFinalFilmThickness = function() {
+          $scope.finalFilmThickness =
+            Formulas.finalFilmThickness($scope.calculationResultsArray);
+
+         $scope.calculationResultsArray =
+           DataManager.joinColumnToTable($scope.calculationResultsArray, $scope.finalFilmThickness);
+
+         $scope.calculationProgress.finalFilmThicknessReady = true;
+         showFinalFilmThicknessTable();
+        }
 
       /****************************************************************/
       /*********************** Private methods ************************/
@@ -196,6 +248,9 @@
         handsontableOptions.colWidths.push(100);
         $('#refractive-index-first-approximation').handsontable(handsontableOptions);
       }
+      /**
+       *  Shows film thickness first approximation table (#film-thickness-first-approximation).
+       */
       var showFilmThicknessFirstApproximationTable = function() {
         handsontableOptions.data = $scope.calculationResultsArray;
         handsontableOptions.colHeaders.push('d_1');
@@ -203,6 +258,41 @@
         handsontableOptions.colWidths.push(100);
         $('#film-thickness-first-approximation').handsontable(handsontableOptions);
       }
+      /**
+       *  Shows interference orders table
+       */
+      var showInterferenceOrdersTable = function() {
+        handsontableOptions.colHeaders.push('m_0');
+        handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
+        handsontableOptions.colWidths.push(100);
+        // clone handsontableOptoins, to not change the original options, but have a copy
+        var thisHandsontableOptions = clone(handsontableOptions);
+        // make cells readonly
+        thisHandsontableOptions.cells = function(r,c, prop) { return {readOnly: true}; };
+        thisHandsontableOptions.data = $scope.calculationResultsArray;
+        $('#interference-orders').handsontable(thisHandsontableOptions);
+      }
+      /**
+       *  Shows exact interference orders table
+       */
+       var showExactInterfereceOrdersTable = function() {
+         handsontableOptions.data = $scope.calculationResultsArray;
+         handsontableOptions.colHeaders.push('m');
+         handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
+         handsontableOptions.colWidths.push(100);
+         $('#exact-interference-orders').handsontable(handsontableOptions);
+       }
+       /**
+        * Shows final film thickness table
+        */
+       var showFinalFilmThicknessTable = function() {
+         handsontableOptions.data = $scope.calculationResultsArray;
+         handsontableOptions.colHeaders.push('d_2');
+         handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
+         handsontableOptions.colWidths.push(100);
+         $('#final-film-thickness').handsontable(handsontableOptions);
+       }
+
 
       /** resetCalculationProgress
        *  Sets all progress flags of $scope.calculationProgress to false.
@@ -221,7 +311,9 @@
         */
        var plotExtrema = function() {
          var minima = DataManager.extractMinima($scope.extrema);
+         $scope.minima = minima;
          var maxima = DataManager.extractMaxima($scope.extrema);
+         $scope.maxima = maxima;
          var plotData = [
            { data: $scope.filmSpectrum, label: 'film spectrum' },
            { data: minima, label: 'minima', points: {radius: 4} },
@@ -235,6 +327,8 @@
              yaxis: { from: $scope.substrateTransmission, to: $scope.substrateTransmission }
            }
          ];
+         plotOptions.grid.clickable = true;
+
          Plotter.plot('extrema-plot-formulas-page', plotData, plotOptions);
        }
 
@@ -253,6 +347,25 @@
              reachedDesiredPoint = true;
            }
          }
+       }
+
+      /**
+       *  Binds hover listener to extrema plot.
+       *  Hover shows mouse coordinates.
+       */
+      function bindListenersToExtremaPlot() {
+        // enable showing mouse coordinates
+        $("#extrema-plot-formulas-page").bind("plothover", function (event, pos, item) {
+          var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+          $("#extrema-plot-mouse-coordinates").text(str);
+        });
+      }
+
+      /**
+       *  Returns clone of @param obj object
+       */
+       var clone = function(obj) {
+         return jQuery.extend({}, obj);
        }
 
     }); // end FormulasCtrl

@@ -63,7 +63,7 @@
       $scope.extrema = 'not calculated yet';
       $scope.extremaLeftBoundary = 600;
       $scope.extremaRightBoundary;
-      $scope.extremaYThreshold = .5;
+      //$scope.extremaYThreshold = .5;
 
       /******************* Controller logic **************************/
       
@@ -71,6 +71,8 @@
 
       $(document).ready(function () {
         console.log('debug', 'document ready, loading inital exp data');
+
+        bindListenersToExtremaPlot();
 
         /**
          *  Listen to CalculationError
@@ -142,8 +144,8 @@
           console.log('$scope.findExtrema() called');
           Calculus.findExtrema($scope.filmSpectrum, {
             leftBoundary: $scope.extremaLeftBoundary,
-            rightBoundary: $scope.extremaRightBoundary,
-            yThreshold: $scope.yThreshold
+            rightBoundary: $scope.extremaRightBoundary
+            //yThreshold: $scope.yThreshold
           }, function(extrema) {
             console.log('$scope.findExtrema: Calculus.findExtrema success');
             console.log('$scope.findExtrema: minima = ' + extrema.minima);
@@ -164,8 +166,8 @@
             resetCalculationProgressTo('calculatingExtrema');
             Calculus.findExtrema($scope.filmSpectrum, {
               leftBoundary: $scope.extremaLeftBoundary,
-              rightBoundary: $scope.extremaRightBoundary,
-              yThreshold: $scope.extremaYThreshold
+              rightBoundary: $scope.extremaRightBoundary
+              //yThreshold: $scope.extremaYThreshold
             }, function(extrema) {
               console.log('debug', '$scope.recalculateExtrema(): extrema found');
               $scope.minima = extrema.minima;
@@ -184,8 +186,12 @@
           resetCalculationProgressTo('extremaFound');
           var handsontable = $('#minima-table').data('handsontable');
           $scope.minima = DataManager.filterUserInput(handsontable.getData());
+          // sort is needed for envelopes calculation
+          $scope.minima = DataManager.sort($scope.minima);
           var handsontable = $('#maxima-table').data('handsontable');
           $scope.maxima = DataManager.filterUserInput(handsontable.getData());
+          // sort is needed for envelopes calculation
+          $scope.maxima = DataManager.sort($scope.maxima);
           showExtremaTable(); // updates the table
           plotExtrema(); // updates the plot
         }
@@ -215,22 +221,26 @@
             envelopeStartX: envelopeStartX,
             envelopeEndX: envelopeEndX
           };
-          try {
-            Calculus.findEnvelope($scope.minima, options, function(envelope) {
+          //try {
+            //Calculus.findEnvelope($scope.minima, options, function(envelope) {
+            //Calculus.findEnvelopeLinear($scope.minima, function(envelope) {
+            Calculus.splineMonotone($scope.minima, function(envelope) {
               //$scope.calculationProgress.envelopesFound = true;
               $scope.minimaEnvelope = envelope; 
               console.log('debug', '$scope.findEnvelopes(): minimaEnvelope.length = ' + $scope.minimaEnvelope.length);
 
-              Calculus.findEnvelope($scope.maxima, options, function(envelope) {
+              //Calculus.findEnvelope($scope.maxima, options, function(envelope) {
+              //Calculus.findEnvelopeLinear($scope.maxima, function(envelope) {
+              Calculus.splineMonotone($scope.maxima, function(envelope) {
                 //$scope.calculationProgress.envelopesFound = true;
                 $scope.maximaEnvelope = envelope; 
                 $scope.calculationProgress.envelopesFound = true;
                 console.log('debug', '$scope.findEnvelopes(): maximaEnvelope.length = ' + $scope.maximaEnvelope.length);
               });
             });
-          } catch (error) {
-            $scope.$broadcast('CalculationError', error);
-          }
+          //} catch (error) {
+           // $scope.$broadcast('CalculationError', error);
+          //}
         }
 
         /********* Calculation Step 3 - find pesudo extrema  ***************/
@@ -383,8 +393,93 @@
           { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaLeftBoundary, to: $scope.extremaLeftBoundary} };
         plotOptions.grid.markings[2] = 
           { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaRightBoundary, to: $scope.extremaRightBoundary} };
+        plotOptions.grid.clickable = true;
+
         Plotter.plot('extrema-plot', plotData, plotOptions);
       };
+
+      /**
+       *  Binds hover and click events to extrema plot.
+       *  Hover shows mouse coordinates.
+       *  Left click adds minima, right click adds maxima.
+       *  Click on extrema removes it. 
+       */
+      function bindListenersToExtremaPlot() {
+        
+        /*** auxilary functions ***/
+
+        /**
+         *  Removes extrema point.
+         *  @param point array [x,y] coordinates of extrema to remove.
+         */
+        var removeExtrema = function(point) {
+          var index = DataManager.indexOfPoint($scope.minima, point);
+          if (index > -1) {
+            $scope.minima.splice(index, 1);
+            plotExtrema();
+            showExtremaTable();
+          } else {
+            index = DataManager.indexOfPoint($scope.maxima, point);
+            if (index > -1) {
+              $scope.maxima.splice(index, 1)
+              plotExtrema();
+              showExtremaTable();
+            }
+          }
+        }
+
+        /******************************/
+
+        var mousePosition = {x: 0, y: 0};
+        var clickItem;
+
+        // enable showing mouse coordinates
+        $("#extrema-plot").bind("plothover", function (event, pos, item) {
+          mousePosition.x = pos.x;
+          mousePosition.y = pos.y;
+          clickItem = item; 
+          var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+          $("#extrema-plot-mouse-coordinates").text(str);
+        });
+        
+        // disable context menu for right click
+        $('#extrema-plot').bind('contextmenu', function(event) {
+          return false;
+        });
+
+        // enable add/remove extrema functionality to plot
+        $("#extrema-plot").mousedown(function(event) {
+          console.log('plot click, event.which = ' + event.which + ', mousePosition.x = ' + mousePosition.x);
+          if(clickItem && clickItem.series.label != 'film spectrum') {
+            // user clicked on extrema, remove it 
+            removeExtrema(clickItem.datapoint);
+          } else {
+            if(clickItem) { // clicked on film spectra point
+              var x = clickItem.datapoint[0];
+              var y = clickItem.datapoint[1];
+            } else { // clicked on empty space
+              var x = mousePosition.x;
+              var y = mousePosition.y;
+            }
+            // add maxima or minima
+            switch(event.which) {
+              case 1: // left button
+                // add minima
+                $scope.minima.push([x, y]);
+                plotExtrema();
+                showExtremaTable();
+                break;
+              case 3: // right button
+                // add maxima
+                $scope.maxima.push([x, y]);
+                plotExtrema();
+                showExtremaTable();
+                return false;
+                break;
+            }
+          }
+        });
+      }
 
       /**
        * Plots envelopes together with all previous data.
@@ -411,14 +506,16 @@
        *  Shows pseudoextrema table using handsontable
        */
       var showPseudoExtremaTable = function() {
-        handsontableOptions.data = $scope.pseudoMinima;
-        handsontableOptions.colHeaders = ['wavelength', 'T_min'];
-        handsontableOptions.cells = function(r,c, prop) { return {readOnly: true}; };
+        // clone handsontableOptoins, to not change the original options, but have a copy
+        var thisHandsontableOptions = clone(handsontableOptions);
+        thisHandsontableOptions.data = $scope.pseudoMinima;
+        thisHandsontableOptions.colHeaders = ['wavelength', 'T_min'];
+        thisHandsontableOptions.cells = function(r,c, prop) { return {readOnly: true}; };
         console.log('debug', 'showExtremaTable(): handsontableOptions.data = ' + handsontableOptions.data);
-        $('#pseudominima-table').handsontable(handsontableOptions);
-        handsontableOptions.data = $scope.pseudoMaxima;
-        handsontableOptions.colHeaders = ['wavelength', 'T_max'];
-        $('#pseudomaxima-table').handsontable(handsontableOptions);
+        $('#pseudominima-table').handsontable(thisHandsontableOptions);
+        thisHandsontableOptions.data = $scope.pseudoMaxima;
+        thisHandsontableOptions.colHeaders = ['wavelength', 'T_max'];
+        $('#pseudomaxima-table').handsontable(thisHandsontableOptions);
       }
 
       /** resetCalculationProgress
@@ -452,6 +549,9 @@
          resetPlotDataToPoint(calculationProgressPoint);
        }
 
+       /**
+        * Resets plotData to @param calculationProgressPoint point
+        */
        var resetPlotDataToPoint = function(calculationProgressPoint) {
          switch (calculationProgressPoint) {
            case 'calculatingExtrema':
@@ -459,6 +559,13 @@
              plotData = plotData.slice(0, 3)
              break;
          }
+       }
+
+      /**
+       *  Returns clone of @param obj object
+       */
+       var clone = function(obj) {
+         return jQuery.extend({}, obj);
        }
     }); // end CalculationCtrl
 })(); // end closure

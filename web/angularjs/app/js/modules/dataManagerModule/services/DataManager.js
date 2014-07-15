@@ -44,33 +44,29 @@
     }
 
     /**
-     *  Filters user input after editing data in handsontable.
-     *  Removes null rows, sorts the data by first column.
+     *  Removes empty rows from @param tableDataArray
      *
      *  @param tableDataArray 2d array of rows: [[a1, b1, c1, ...], [a2, b2, c2, ...], ...]
      */
     this.filterUserInput = function(tableDataArray) {
-      var badEntriesIndexes = [];
-      for(var i=0; i<tableDataArray.length; i++) {
-        var rowIsNull = false;
-        for(var j=0; j<tableDataArray[i].length; j++) {
+      var badRowsIndexes = [];
+      for (var i=0; i<tableDataArray.length; i++) {
+        var emptyRowsCount = 0;
+        for (var j=0; j<tableDataArray[i].length; j++) {
           if (tableDataArray[i][j] === null || tableDataArray[i][j] === '') {
-            rowIsNull = true;
-          } else {
-            rowIsNull = false;
+            emptyRowsCount++;
           }
         }
-        if(rowIsNull) {
-          console.log('debug', 'DataManager.filterUserInput(): found null');
-          badEntriesIndexes.push(i);
+        if(emptyRowsCount == tableDataArray[i].length) {
+          console.log('debug', 'DataManager.filterUserInput(): found empty row');
+          badRowsIndexes.push(i);
         }
       }
-      console.log('debug', 'DataManager.filterUserInput(): bad row indexes = ' + badEntriesIndexes);
-      for(var i=0; i<badEntriesIndexes.length; i++) {
-        console.log('debug', 'DataManager.filterUserInput(): removing bad row, index = ' + badEntriesIndexes[i]);
-        tableDataArray.splice(badEntriesIndexes[i], 1);
+      console.log('debug', 'DataManager.filterUserInput(): bad row indexes = ' + badRowsIndexes);
+      for(var i=0; i<badRowsIndexes.length; i++) {
+        console.log('debug', 'DataManager.filterUserInput(): removing bad row, index = ' + badRowsIndexes[i]);
+        tableDataArray.splice(badRowsIndexes[i], 1);
       }
-      this.sort(tableDataArray);
       return tableDataArray;
     }
 
@@ -103,7 +99,7 @@
     this.extractMinima = function(extremaArray) {
       var minima = [];
       for(var i=0; i<extremaArray.length; i++) {
-        minima.push([ extremaArray[i][0], extremaArray[i][1] ]); 
+        minima.push([ parseFloat(extremaArray[i][0]), parseFloat(extremaArray[i][1]) ]); 
       }
       return minima;
     }
@@ -115,7 +111,9 @@
     this.extractMaxima = function(extremaArray) {
       var maxima= [];
       for(var i=0; i<extremaArray.length; i++) {
-        maxima.push([ extremaArray[i][0], extremaArray[i][2] ]); 
+        var wavelength = parseFloat(extremaArray[i][0]);
+        var T = parseFloat(extremaArray[i][2]);
+        maxima.push([ wavelength, T ]); 
       }
       return maxima;
     }
@@ -177,7 +175,7 @@
      *  and normalizes Transmission.
      */
     var convertFilmSpectrum = function(filmSpectrum) {
-      //filmSpectrum = self.convertToNanometer(filmSpectrum);
+      filmSpectrum = self.convertToNanometer(filmSpectrum);
       filmSpectrum = normalizeTransmission(filmSpectrum);
       return filmSpectrum;
     }
@@ -295,6 +293,41 @@
       } else {
         for(var i=0; i<table.length; i++) {
           table[i].push(column[i]);
+        }
+      }
+      return table;
+    }
+
+    /**
+     *  Returns index of point in 2d array of points.
+     *  @param pointsArray array of points to look in.
+     *  @param point array [x,y]
+     *  @return index of point or -1 if nothing was found.
+     */
+    this.indexOfPoint = function(pointsArray, point) {
+      var index = -1;
+      for(var i=0; i<pointsArray.length; i++) {
+        if(pointsArray[i][0] == point[0] && pointsArray[i][1] == point[1]) {
+          index = i;
+          break;
+        }
+      }
+      return index;
+    }
+    /**
+     *  Replace column (1d array) in table (2d array).
+     *  @param table 2d array of rows [[a1, b1, ...], [a2, b2, ...], ...].
+     *  @param column array [c1, c2, ...].
+     *  @param columnIndex index of column which should be replaced.
+     *
+     *  @return table with replaced column.
+     */
+    this.replaceColumnInTable = function(table, column, columnIndex) {
+      if(table.length != column.length) {
+        throw new Error('DataManager: trying to join table and column with different length');  
+      } else {
+        for(var i=0; i<table.length; i++) {
+          table[i][columnIndex] = column[i];
         }
       }
       return table;

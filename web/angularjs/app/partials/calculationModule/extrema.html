@@ -3,6 +3,22 @@
     <div points-table points="maxima" name="Maxima"></div>
     -->
 
+    <!-- extrema plot -->
+    <div class="plot-container">
+      <h2>Extrema</h2>
+      <div>left click to add minima, right click to add maxima</div>
+      <div>click on extrema point to remove it</div>
+      <div id="extrema-plot" class="data-plot"></div>
+    </div>
+    <div>mouse coordinates on plot: <span id="extrema-plot-mouse-coordinates"></span></div>
+
+    <div class="vertical-margins">extrema left boundary: <input type="text" ng-model="extremaLeftBoundary" /></div>
+    <div class="vertical-margins">extrema right boundary: <input type="text" ng-model="extremaRightBoundary" /></div>
+    <!-- not using y-threshold anymore
+    <div class="vertical-margins">extrema search Y-axis threshold (is used to discard noise extrema): <input type="text" ng-model="extremaYThreshold" /></div>
+    -->
+    <button class="calculation-flow" ng-click="recalculateExtrema()">Recalculate extrema considering new boundaries</button>
+
     <!-- Extrema tables -->
       <!-- Minima table -->
       <div class="points-table-name"> Minima </div>
@@ -13,20 +29,24 @@
       <div id="maxima-table"></div>
 
       <div class="small-font">
-        You can edit data in extrema tables manually, if needed
+        Tables are editable!
       </div>
 
       <button
         class="calculation-flow save"
         ng-click="updateExtremaFromTables()"
       >
-        Apply extrema edits 
+        Apply table edits 
       </button>
     <!-- ------------ -->
 
-    <div class="vertical-margins">extrema left boundary: <input type="text" ng-model="extremaLeftBoundary" /></div>
-    <div class="vertical-margins">extrema right boundary: <input type="text" ng-model="extremaRightBoundary" /></div>
-    <div class="vertical-margins">extrema search Y-axis threshold (is used to discard noise extrema): <input type="text" ng-model="extremaYThreshold" /></div>
-    <button class="calculation-flow" ng-click="recalculateExtrema()">Recalculate extrema considering new options</button>
+    <!-- debug -->
+    <!--
+    <br />
+    <br />
+    Debug: <br />
+    minimaEnvelope: {[{minimaEnvelope}]} <br />
+    maximaEnvelope: {[{maximaEnvelope}]} <br />
+    -->
+
       
-    <div id="extrema-plot" class="data-plot"></div>

@@ -68,6 +68,16 @@
 <script src="{{ bower }}{{ asset('handsontable/dist/jquery.handsontable.js') }}"></script>
 <script src="{{ bower }}{{ asset('numeraljs/numeral.js') }}"></script>
 <link rel="stylesheet" href="{{ bower }}/handsontable/dist/jquery.handsontable.css" type="text/css" />
+<!-- MathJax -->
+<script type="text/javascript" src="/angularjs/app/lib/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+  MathJax.Hub.Config({
+      jax: ["input/TeX","output/HTML-CSS"],
+      displayAlign: "left"
+  });
+</script>
+
+
 
 <!-- "flot" plotting tool -->
 <script src="{{ bower }}{{ asset('flot.tooltip/js/jquery.flot.js') }}"></script>

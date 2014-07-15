@@ -87,14 +87,15 @@ button:active, input:focus {
   margin: 2em 0 2em 0;
 }
 button.calculation-flow, .calculation-flow-button {
-  background-color: #2090ff;
+  //background-color: #2090ff;
+  background-color: #111;
   padding: .5em 1em .5em 1em;
-  margin: 1em .3em 1em .3em;
+  margin: 1em .3em 1em 0;
   color: white;
   font-weight: bold;
-  font-size: 1em;
+  font-size: .9em;
   border: 0;
-  border-radius: 10px;
+  border-radius: 2px;
   cursor: pointer;
 }
 button.download {
@@ -104,7 +105,7 @@ button.save {
   font-size: .9em;
   padding: .3em .6em .3em .6em;
   border-radius: 2px;
-  background-color: #6b4529;
+  background-color: #555;
 }
 input[type="text"] {
   border: 0;

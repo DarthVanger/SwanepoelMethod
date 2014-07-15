@@ -27,6 +27,7 @@
 
   <div class="plot-container">
     <h2>Extrema plot</h2>
+    <div>mouse coordinates on plot: <span id="extrema-plot-mouse-coordinates"></span></div>
     <div id="extrema-plot-formulas-page" class="data-plot"></div>
   </div>
 
@@ -36,14 +37,21 @@
   >
     Calculate refractive index first approximation
   </button>
-  <br />
 
-  <div class="table-container" ng-show="calculationProgress.refractiveIndexFirstApproximationReady">
-    <h2>Refractive index first approximation</h2>
-    <div id="refractive-index-first-approximation"></div>
+  <br />
+  <div ng-show="calculationProgress.refractiveIndexFirstApproximationReady">
+     $$
+       n_1 = \left[ N + \left( N^2 - s^2 \right)^{\frac{1}{2}} \right] ^{\frac{1}{2}} , \\[4ex]
+       \text{where} \\[2ex]
+       N = 2s \frac{T_M - T_m}{T_M T_m} + \frac{s^2 + 1}{2} , \\[4ex]
+       s = \frac{1}{T_s} + \left( \frac{1}{T_s^2} \right)^\frac{1}{2} .
+     $$
+    <div class="table-container">
+      <h2>Refractive index first approximation</h2>
+      <div id="refractive-index-first-approximation"></div>
+    </div>
+    <br />
   </div>
-  <br />
-
   <button
     class="calculation-flow"
     ng-click="calculateFilmThicknessFirstApproximation()"
@@ -64,15 +72,7 @@
     </div>
     <br />
     
-    <!-- button: apply table edits -->
-    <button
-      class="calculation-flow save"
-      ng-click="updateCalculationResultsFromTable('film-thickness-first-approximation')"
-    >
-      Apply table edits 
-    </button>
-    <br />
-
+    <!-- button: calculate average film thickness first approximation -->
     <button
       class="calculation-flow"
       ng-click="calculateAverageFilmThicknessFirstApproximation()"
@@ -82,12 +82,75 @@
     </button>
     <br />
 
-    <div>
-      d_1 avrg: {[{averageFilmThicknessFirstApproximation}]}
-      d_1 st. dev.: {[{filmThicknessFirstApproximationError}]}
-
+    <!-- average-film-thickness-first-approximation -->
+    <div ng-show="calculationProgress.averageFilmThicknessFirstApproximationReady">
+      <span>\( \bar{d_1} = \) </span>{[{averageFilmThicknessFirstApproximation | number: 2}]} nm <br />
+      <span>\( \sigma_{d_1} = \)</span> {[{filmThicknessFirstApproximationError | number: 2}]} nm
     </div>
   </div> <!-- end film-thickness-first-approximation -->
+
+  <!-- button: calculate interference orders -->
+  <button
+    class="calculation-flow"
+    ng-click="calculateInterferenceOrders()"
+    ng-show="calculationProgress.averageFilmThicknessFirstApproximationReady"
+  >
+   Calculate interference orders
+  </button>
+  <br />
+
+  <!-- interference-orders -->
+  <div ng-show="calculationProgress.interferenceOrdersReady">
+    <div class="table-container" >
+      <h2>Interference Orders</h2>
+      <div id="interference-orders"></div>
+    </div>
+    
+    <br />
+    <br />
+    <div>
+      First extremum is: <br />
+      <input type="radio" ng-model="firstExtremumIs" value="minimum" /> Minimum
+      <br />
+      <input type="radio" ng-model="firstExtremumIs" value="maximum" /> Maximum<br />
+    </div>
+
+    <!-- button: find exact interference orders -->
+    <button
+      class="calculation-flow"
+      ng-click="findExactInterferenceOrders()"
+    >
+     Find exact integer and half integer interference orders
+    </button>
+    <br />
+  </div> <!-- end interference-orders -->
+
+  <!-- exact interference orders -->
+  <div ng-show="calculationProgress.exactInterferenceOrdersReady">
+    <div class="table-container" >
+      <h2>Exact Interference Orders</h2>
+      <div id="exact-interference-orders"></div>
+    </div>
+    <br />
+
+    <!-- button: find final film thickness -->
+    <button
+      class="calculation-flow"
+      ng-click="findFinalFilmThickness()"
+    >
+      Find final film thickness
+    </button>
+    <br />
+  </div>
+
+  <!-- final film thickness -->
+  <div ng-show="calculationProgress.finalFilmThicknessReady">
+    <div class="table-container" >
+      <h2>Final film thickness</h2>
+      <div id="final-film-thickness"></div>
+    </div>
+  </div>
+
 
 
   <!-- debug -->

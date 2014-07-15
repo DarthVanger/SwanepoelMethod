@@ -31,6 +31,7 @@
         }
         return n_1Array;
     }
+
     this.filmThicknessFirstApproximation = function(calculationResultsArray) {
       var d_1Array = [];
       var wavelength1 = calculationResultsArray[0][0];
@@ -52,6 +53,67 @@
       }
       return d_1Array;
     }  
+
+    this.interferenceOrders = function(calculationResultsArray, averageFilmThickness) {
+      var d1 = averageFilmThickness;
+      var m0Array = [];
+      for(var i=0; i<calculationResultsArray.length; i++) {
+        var wavelength = calculationResultsArray[i][0];
+        var n1 = calculationResultsArray[i][3];
+        
+        var m0 = ( 2 * n1 * d1 ) / wavelength;
+        m0Array.push(m0);
+      }
+      return m0Array;
+    }
+
+    this.exactInterferenceOrders = function(interferenceOrders, firstExtremumIs) {
+      var exactOrdersArray = [];
+      var currentExtremumIsMinimum = ( firstExtremumIs == 'minimum' );
+      for(var i=0; i<interferenceOrders.length; i++) {
+        var order = interferenceOrders[i];
+        if(currentExtremumIsMinimum) {
+          var exactOrder = closestHalfInteger(order);
+        } else {
+          var exactOrder = Math.round(order);
+        }
+        exactOrdersArray.push(exactOrder);
+        currentExtremumIsMinimum = ! currentExtremumIsMinimum;
+      }
+      return exactOrdersArray;
+    }
+
+    this.finalFilmThickness = function(calculationResultsArray) {
+      var d2Array = [];
+      for(var i=0; i<calculationResultsArray.length; i++) {
+        var wavelength = calculationResultsArray[i][0];
+        var n1 = calculationResultsArray[i][3];
+        var m = calculationResultsArray[i][6];
+
+        var d2 = ( m * wavelength ) / ( 2 * n1 );
+
+        d2Array.push(d2);
+      }
+      return d2Array;
+    }
+
+    var closestHalfInteger = function(number) {
+      var middle;
+      var result;
+      if (number - Math.floor(number) > 0.5 ) {
+        middle = Math.ceil(number);      
+      } else {
+        middle = Math.floor(number);
+      }
+
+      if (number - middle > 0) {
+        result = middle + 0.5; 
+      } else {
+        result = middle - 0.5;
+      }
+
+      return result;
+    }
 
    }); // end Formulas service
 })(); // end closure
