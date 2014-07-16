@@ -15,6 +15,7 @@
   </div>
 
   <h2>Extrema table</h2>
+  <div class="small-font">this table is editable!</div>
   <div id="extrema-table-formulas-page"></div>
 
   <button
@@ -149,15 +150,74 @@
       <h2>Final film thickness</h2>
       <div id="final-film-thickness"></div>
     </div>
+    <br />
+
+    <!-- button: calculate average of final film thickness -->
+    <button
+      class="calculation-flow"
+      ng-click="calculateAverageFilmThicknessFinal()"
+    >
+      Calculate average of final film thickness
+    </button>
+    <br />
+
+    <!-- average of final film thickness -->
+    <br />
+    <div ng-show="calculationProgress.averageFilmThicknessFinalReady">
+      <div>
+        <span>\( \bar{d_2} = \) </span>{[{averageFilmThicknessFinal | number: 2}]} nm <br />
+        <span>\( \sigma_{d_2} = \)</span> {[{filmThicknessFinalError | number: 2}]} nm
+      </div>
+      <br />
+      <!-- button: calculate average of final film thickness -->
+      <button
+        class="calculation-flow"
+        ng-click="calculateFinalRefractiveIndex()"
+      >
+        Calculate final refractive index
+      </button>
+      <br />
+    </div>
+  </div> <!-- final-film-thickness -->
+
+  <!-- final-refractive-index -->
+  <div ng-show="calculationProgress.finalRefractiveIndexReady">
+    <div class="table-container" >
+      <h2>Final refractive index</h2>
+      <div id="final-refractive-index"></div>
+    </div>
+    <br />
+    <br />
+    <a target="_blank" href="{[{finalRefractiveIndexFileLink}]}">Download final refractive index vs wavelength table</a>
+    <br />
+    <a target="_blank" href="{[{finalWholeTableFileLink}]}">Download entire calculation results table</a>
+    <br />
+
+    <div class="plot-container">
+      <h2>Refractive index vs wavelength</h2>
+      <div id="refractive-index-plot" class="data-plot"></div>
+    </div>
+    <br />
+
+    <!-- button: single-oscillator model -->
+    <button
+      class="calculation-flow"
+      ng-click="calculateSingleOscillatorModel()"
+    >
+      Calculate single-oscillator model
+    </button>
+    <br />
+
   </div>
 
 
-
   <!-- debug -->
+  <!--
   <h2> Debug </h2>
   N: {[{N}]} <hr />
   n_1: {[{refractiveIndexFirstApproximation}]} <hr />
   calculation results: {[{calculationResultsArray}]} <hr />
   d_1 : {[{filmThicknessFirstApproximation}]} <hr />
+  -->
 
 </div>

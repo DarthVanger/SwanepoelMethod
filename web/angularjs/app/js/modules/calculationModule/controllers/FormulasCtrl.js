@@ -48,6 +48,7 @@
        */
       $scope.extrema = DataManager.data.extrema;
       $scope.filmSpectrum = DataManager.data.filmSpectrum;
+      $scope.envelopes = DataManager.data.envelopes;
 
       /**
        *  variables used in calculations
@@ -65,6 +66,7 @@
 
       $(document).ready(function() {
         bindListenersToExtremaPlot(); 
+        MathJax.Hub.Typeset()
       });
 
       /**
@@ -72,7 +74,7 @@
        *  Or load last used extrema.
        */ 
       if($scope.extrema && $scope.filmSpectrum) {
-        $scope.calculationProgress.extremaAndSpectrumReady= true;
+        $scope.calculationProgress.extremaAndSpectrumReady = true;
       } else {
         DataManager.getLastUploadedExtrema().then(function(result) {
           $scope.extrema = result.data; 
@@ -143,15 +145,23 @@
       }
 
       /****** Step 1: calculating n_1 - refractive index first approximation ********/
+
+      /**
+       *  Refractive index first approximation
+       */
       $scope.calculateRefractiveIndexFirstApproximation = function() {
         $scope.refractiveIndexFirstApproximation =
           Formulas.refractiveIndexFirstApproximation($scope.extrema, $scope.substrateRefractiveIndex);
-        $scope.calculationResultsArray = DataManager.joinColumnToTable($scope.extrema, $scope.refractiveIndexFirstApproximation);
+        $scope.calculationResultsArray =
+          DataManager.replaceColumnInTable($scope.extrema, $scope.refractiveIndexFirstApproximation, DataManager.N_1_COLUMN);
 
         $scope.calculationProgress.refractiveIndexFirstApproximationReady = true;
         showRefractiveIndexFirstApproximationTable();
       }
 
+      /**
+       *  Film thickness first approximation
+       */
       $scope.calculateFilmThicknessFirstApproximation = function() {
         $scope.filmThicknessFirstApproximation =
           Formulas.filmThicknessFirstApproximation($scope.calculationResultsArray);
@@ -159,13 +169,13 @@
         $scope.filmThicknessFirstApproximation.unshift('-');
         $scope.filmThicknessFirstApproximation.unshift('-');
 
-        $scope.calculationResultsArray = DataManager.joinColumnToTable(
-          $scope.calculationResultsArray, $scope.filmThicknessFirstApproximation
+        $scope.calculationResultsArray = DataManager.replaceColumnInTable(
+          $scope.calculationResultsArray, $scope.filmThicknessFirstApproximation, DataManager.D_1_COLUMN
         );
 
         $scope.calculationProgress.filmThicknessFirstApproximationReady = true;
         showFilmThicknessFirstApproximationTable();
-      }
+      };
 
       /**
        *  Update calculationResultsArray after user edits in handsontable
@@ -195,11 +205,13 @@
        $scope.calculateInterferenceOrders = function() {
          $scope.interferenceOrders =
            Formulas.interferenceOrders($scope.calculationResultsArray, $scope.averageFilmThicknessFirstApproximation);
-         $scope.calculationResultsArray = DataManager.joinColumnToTable($scope.calculationResultsArray, $scope.interferenceOrders);
+         $scope.calculationResultsArray = DataManager.replaceColumnInTable(
+           $scope.calculationResultsArray, $scope.interferenceOrders, DataManager.M_0_COLUMN
+         );
 
          $scope.calculationProgress.interferenceOrdersReady = true;
          showInterferenceOrdersTable();
-       }
+       };
 
        /**
         * Find exact interference orders
@@ -208,12 +220,13 @@
          $scope.exactInterferenceOrders =
            Formulas.exactInterferenceOrders($scope.interferenceOrders, $scope.firstExtremumIs);
 
-         $scope.calculationResultsArray =
-           DataManager.joinColumnToTable($scope.calculationResultsArray, $scope.exactInterferenceOrders);
+         $scope.calculationResultsArray = DataManager.replaceColumnInTable(
+           $scope.calculationResultsArray, $scope.exactInterferenceOrders, DataManager.M_COLUMN
+         );
 
          $scope.calculationProgress.exactInterferenceOrdersReady = true;
          showExactInterfereceOrdersTable();
-       }
+       };
 
        /**
         * Find final film thickness
@@ -227,11 +240,79 @@
 
          $scope.calculationProgress.finalFilmThicknessReady = true;
          showFinalFilmThicknessTable();
-        }
+        };
+        
+        /**
+         *  Average film thickness final 
+         */
+         $scope.calculateAverageFilmThicknessFinal = function() {
+           $scope.updateCalculationResultsFromTable('final-film-thickness');
+           var d_2 = DataManager.extractColumnFromTable($scope.calculationResultsArray, DataManager.D_2_COLUMN);
+           console.log('debug', 'd_2 = ' + d_2);
+           $scope.averageFilmThicknessFinal = Statistics.average(d_2);
+           $scope.filmThicknessFinalError = Statistics.standardDeviation(d_2);
+           $scope.calculationProgress.averageFilmThicknessFinalReady = true;
+         };
+
+         /**
+          * Final refractive index
+          */
+         $scope.calculateFinalRefractiveIndex = function() {
+           $scope.refractiveIndexFinal =
+             Formulas.finalRefractiveIndex($scope.extrema, $scope.averageFilmThicknessFinal)
+           $scope.calculationResultsArray =
+             DataManager.replaceColumnInTable($scope.extrema, $scope.refractiveIndexFinal, DataManager.N_2_COLUMN);
+
+           $scope.calculationProgress.finalRefractiveIndexReady = true;
+           saveFinalRefractiveIndexToFile();
+           saveWholeFinalResultsTableToFile();
+           showFinalRefractiveIndexTable();
+           plotRefractiveIndex();
+         };
+
+         /******** step X: single-oscillator model ********/
+
+         /**
+          * Single-oscillator model
+          */
+          $scope.calculateSingleOscillatorModel = function() {
+            console.log('debug', 'FormulasCtrl.calculateSingleOscillatorModel() called');
+            var wavelengths = DataManager.extractColumnFromTable($scope.calculationResultsArray, 0);
+            var energies = Formulas.convertWavelengthsToEnergies(wavelengths);
+            console.log('energies = ' + energies);
+          }
 
       /****************************************************************/
       /*********************** Private methods ************************/
       /****************************************************************/
+
+       /**
+        * Plots extrema to #extrema-plot-formulas-page 
+        */
+       var plotExtrema = function() {
+         var minima = DataManager.extractMinima($scope.extrema);
+         $scope.minima = minima;
+         var maxima = DataManager.extractMaxima($scope.extrema);
+         $scope.maxima = maxima;
+         var plotData = [
+           { data: $scope.filmSpectrum, label: 'film spectrum' },
+           { data: $scope.envelopes.minima, label: 'minima envelope'},
+           { data: $scope.envelopes.maxima, label: 'maxima envelope'},
+           { data: minima, label: 'minima', points: {radius: 4} },
+           { data: maxima, label: 'maxima', points: {radius: 4} }
+         ];
+         // substrate transmission line
+         plotOptions.grid.markings = [
+           {
+             color: '#5d5',
+             lineWidth: 2,
+             yaxis: { from: $scope.substrateTransmission, to: $scope.substrateTransmission }
+           }
+         ];
+         //plotOptions.grid.clickable = true;
+
+         Plotter.plot('extrema-plot-formulas-page', plotData, plotOptions);
+       }
 
       /**
        *  Shows extrema using handsontable on #extrema-table-formulas-page
@@ -243,9 +324,9 @@
 
       var showRefractiveIndexFirstApproximationTable = function() {
         handsontableOptions.data = $scope.calculationResultsArray;
-        handsontableOptions.colHeaders.push('n_1');
-        handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
-        handsontableOptions.colWidths.push(100);
+        handsontableOptions.colHeaders[DataManager.N_1_COLUMN] = 'n_1';
+        handsontableOptions.columns[DataManager.N_1_COLUMN] = {type: 'numeric', format: '0.00'};
+        handsontableOptions.colWidths[DataManager.N_1_COLUMN] = 100;
         $('#refractive-index-first-approximation').handsontable(handsontableOptions);
       }
       /**
@@ -253,18 +334,18 @@
        */
       var showFilmThicknessFirstApproximationTable = function() {
         handsontableOptions.data = $scope.calculationResultsArray;
-        handsontableOptions.colHeaders.push('d_1');
-        handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
-        handsontableOptions.colWidths.push(100);
+        handsontableOptions.colHeaders[DataManager.D_1_COLUMN] = 'd_1';
+        handsontableOptions.columns[DataManager.D_1_COLUMN] = {type: 'numeric', format: '0.00'};
+        handsontableOptions.colWidths[DataManager.D_1_COLUMN] = 100;
         $('#film-thickness-first-approximation').handsontable(handsontableOptions);
       }
       /**
        *  Shows interference orders table
        */
       var showInterferenceOrdersTable = function() {
-        handsontableOptions.colHeaders.push('m_0');
-        handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
-        handsontableOptions.colWidths.push(100);
+        handsontableOptions.colHeaders[DataManager.M_0_COLUMN] = 'm_0';
+        handsontableOptions.columns[DataManager.M_0_COLUMN] = {type: 'numeric', format: '0.00'};
+        handsontableOptions.colWidths[DataManager.M_0_COLUMN] = 100;
         // clone handsontableOptoins, to not change the original options, but have a copy
         var thisHandsontableOptions = clone(handsontableOptions);
         // make cells readonly
@@ -277,9 +358,9 @@
        */
        var showExactInterfereceOrdersTable = function() {
          handsontableOptions.data = $scope.calculationResultsArray;
-         handsontableOptions.colHeaders.push('m');
-         handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
-         handsontableOptions.colWidths.push(100);
+         handsontableOptions.colHeaders[DataManager.M_COLUMN] = 'm';
+         handsontableOptions.columns[DataManager.M_COLUMN] = {type: 'numeric', format: '0.00'};
+         handsontableOptions.colWidths[DataManager.M_COLUMN] = 100;
          $('#exact-interference-orders').handsontable(handsontableOptions);
        }
        /**
@@ -287,12 +368,50 @@
         */
        var showFinalFilmThicknessTable = function() {
          handsontableOptions.data = $scope.calculationResultsArray;
-         handsontableOptions.colHeaders.push('d_2');
-         handsontableOptions.columns.push({type: 'numeric', format: '0.00'});
-         handsontableOptions.colWidths.push(100);
+         handsontableOptions.colHeaders[DataManager.D_2_COLUMN] = 'd_2';
+         handsontableOptions.columns[DataManager.D_2_COLUMN] = {type: 'numeric', format: '0.00'};
+         handsontableOptions.colWidths[DataManager.D_2_COLUMN] = 100;
          $('#final-film-thickness').handsontable(handsontableOptions);
        }
+       /**
+        * Shows final refractive index table
+        */
+       var showFinalRefractiveIndexTable = function() {
+         handsontableOptions.data = $scope.calculationResultsArray;
+         handsontableOptions.colHeaders[DataManager.N_2_COLUMN] = 'n_2';
+         handsontableOptions.columns[DataManager.N_2_COLUMN] = {type: 'numeric', format: '0.00'};
+         handsontableOptions.colWidths[DataManager.N_2_COLUMN] = 100;
+         $('#final-refractive-index').handsontable(handsontableOptions);
+       }
+        /**
+         *  Save final results table to file
+         */
+        var saveWholeFinalResultsTableToFile = function() {
+          var resultsTable = cloneArray($scope.calculationResultsArray);
+          resultsTable.unshift(['wavelength', 'T_min', 'T_max', 'n_1', 'd_1', 'm_0', 'm', 'd_2', 'n_2']);
+          DataManager.saveFileFromArray($scope.calculationResultsArray, 'final-results-whole-table', 'calculation-results')
+            .then(function(result) {
+              $scope.finalWholeTableFileLink = result.link;
+            });
 
+        }
+        var saveFinalRefractiveIndexToFile = function() {
+          var refractiveIndexTable = DataManager.extractRefractiveIndex($scope.calculationResultsArray); 
+          DataManager.saveFileFromArray(refractiveIndexTable, 'final-refractive-index.csv', 'calculation-results')
+            .then(function(result) {
+              $scope.finalRefractiveIndexFileLink = result.link;
+            });
+        }
+
+       /**
+        * Plots final refractive index vs wavelength
+        */
+       var plotRefractiveIndex = function() {
+         var refractiveIndex = DataManager.extractRefractiveIndex($scope.calculationResultsArray);
+         plotData = [{data: refractiveIndex, label: 'refractive index', points: {'radius': 4} }];
+         console.log('FormulasCtrl.plotRefractiveIndex(): plotting refractiveIndex = ' + refractiveIndex);
+         Plotter.plot('refractive-index-plot', plotData);
+       }
 
       /** resetCalculationProgress
        *  Sets all progress flags of $scope.calculationProgress to false.
@@ -306,31 +425,6 @@
          }
        }
 
-       /**
-        * Plots extrema to #extrema-plot-formulas-page 
-        */
-       var plotExtrema = function() {
-         var minima = DataManager.extractMinima($scope.extrema);
-         $scope.minima = minima;
-         var maxima = DataManager.extractMaxima($scope.extrema);
-         $scope.maxima = maxima;
-         var plotData = [
-           { data: $scope.filmSpectrum, label: 'film spectrum' },
-           { data: minima, label: 'minima', points: {radius: 4} },
-           { data: maxima, label: 'maxima', points: {radius: 4} }
-         ];
-         // substrate transmission line
-         plotOptions.grid.markings = [
-           {
-             color: '#5d5',
-             lineWidth: 2,
-             yaxis: { from: $scope.substrateTransmission, to: $scope.substrateTransmission }
-           }
-         ];
-         plotOptions.grid.clickable = true;
-
-         Plotter.plot('extrema-plot-formulas-page', plotData, plotOptions);
-       }
 
        /**
         * Resets calculation progress to @param calculationProgressPoint point
@@ -349,6 +443,13 @@
          }
        }
 
+       /**
+        * Save results table to file
+        */
+        var saveResultsTableToFile = function(filename) {
+          DataManager.saveFileFromArray($scope.calculationResultsArray, filename, 'calculation-results')
+        }
+
       /**
        *  Binds hover listener to extrema plot.
        *  Hover shows mouse coordinates.
@@ -366,6 +467,14 @@
        */
        var clone = function(obj) {
          return jQuery.extend({}, obj);
+       }
+
+       var cloneArray = function(array) {
+         var clone = [];
+         for(var i=0; i<array.length; i++) {
+           clone.push(array[i]);
+         }
+         return clone;
        }
 
     }); // end FormulasCtrl

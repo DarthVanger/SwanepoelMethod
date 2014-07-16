@@ -117,14 +117,16 @@
     /**
      *  Find monotone cubic spline
      */
-     this.splineMonotone = function(points, callback) {
+     this.splineMonotone = function(points, options, callback) {
+       var envelopeStartX = options.envelopeStartX ? options.envelopeStartX : 0;
+       var envelopeEndX = options.envelopeEndX ? options.envelopeEndX : 1000;
        var spline = [];
        var xVector = extractXCoordinates(points);
        var yVector = extractYCoordinates(points);
 
        var interpolant = createMonotoneInterpolant(xVector, yVector);
        //var x = numeric.linspace(envelopeStartX, envelopeEndX, SPLINE_POINTS_NUMBER);
-       for (var x=600; x<900; x++) {
+       for (var x=envelopeStartX; x<envelopeEndX; x++) {
          spline.push([x, interpolant(x)]);
        }
        callback(spline);

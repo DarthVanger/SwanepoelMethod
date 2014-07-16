@@ -101,7 +101,7 @@ button.calculation-flow, .calculation-flow-button {
 button.download {
   background-color: #a560aa;
 }
-button.save {
+button.save, button.secondary {
   font-size: .9em;
   padding: .3em .6em .3em .6em;
   border-radius: 2px;

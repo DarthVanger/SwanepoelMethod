@@ -42,7 +42,7 @@
        */
       $scope.filmSpectrum = 'not loaded yet';
 
-      $scope.substrateRefractiveIndex;
+      //$scope.substrateRefractiveIndex;
 
       /**
        *  Calculation progress stages, which show/hide corresponding divs,
@@ -89,15 +89,15 @@
          */ 
         loadInitialExperimentalData(); 
       
-        /****** Listen for spectra upload & refractive index change *******/
+        /****** Listen for spectra upload *******/
 
-        $scope.$watch('substrateRefractiveIndex', function(newValue, oldValue) {
-          if(newValue) {
-            console.log('debug', 'substrateRefractiveIndex changed, newValue = ' + newValue + ', old value = ' + oldValue);
-            resetCalculationProgress();
-            showRawFilmSpectrum();
-          }
-        });
+        //$scope.$watch('substrateRefractiveIndex', function(newValue, oldValue) {
+        //  if(newValue) {
+        //    console.log('debug', 'substrateRefractiveIndex changed, newValue = ' + newValue + ', old value = ' + oldValue);
+        //    resetCalculationProgress();
+        //    showRawFilmSpectrum();
+        //  }
+        //});
 
         // listen for new film spectrum file upload start to reset calculation progress
         $scope.$on('NewFilmSpectrumFileUploadStart', function() {
@@ -212,26 +212,26 @@
          */
         $scope.findEnvelopes = function() {
           $scope.updateExtremaFromTables();
-          console.log('debug', '$scope.findEnvelopes called');
+          console.log('debug', '$scope.findEnvelopes() called, minima = ' + $scope.minima);
           $scope.calculationProgress.calculatingEnvelopes = true;
-          var envelopeStartX = Math.min($scope.minima[0][0], $scope.maxima[0][0]);
-          console.log('debug', '$scope.findEnvelopes(): envelopeStartX = ' + envelopeStartX); 
-          var envelopeEndX = Math.max($scope.minima[$scope.minima.length-1][0], $scope.maxima[$scope.maxima.length-1][0]);
+          //var envelopeStartX = Math.min($scope.minima[0][0], $scope.maxima[0][0]);
+          //console.log('debug', '$scope.findEnvelopes(): envelopeStartX = ' + envelopeStartX); 
+          //var envelopeEndX = Math.max($scope.minima[$scope.minima.length-1][0], $scope.maxima[$scope.maxima.length-1][0]);
           var options = {
-            envelopeStartX: envelopeStartX,
-            envelopeEndX: envelopeEndX
+            envelopeStartX: $scope.extremaLeftBoundary,
+            envelopeEndX: $scope.extremaRightBoundary 
           };
           //try {
             //Calculus.findEnvelope($scope.minima, options, function(envelope) {
             //Calculus.findEnvelopeLinear($scope.minima, function(envelope) {
-            Calculus.splineMonotone($scope.minima, function(envelope) {
+            Calculus.splineMonotone($scope.minima, options, function(envelope) {
               //$scope.calculationProgress.envelopesFound = true;
               $scope.minimaEnvelope = envelope; 
               console.log('debug', '$scope.findEnvelopes(): minimaEnvelope.length = ' + $scope.minimaEnvelope.length);
 
               //Calculus.findEnvelope($scope.maxima, options, function(envelope) {
               //Calculus.findEnvelopeLinear($scope.maxima, function(envelope) {
-              Calculus.splineMonotone($scope.maxima, function(envelope) {
+              Calculus.splineMonotone($scope.maxima, options, function(envelope) {
                 //$scope.calculationProgress.envelopesFound = true;
                 $scope.maximaEnvelope = envelope; 
                 $scope.calculationProgress.envelopesFound = true;
@@ -275,8 +275,13 @@
           $scope.savingFinalExtremaFile = true;
           var handsontable = $('#final-extrema-points').data('handsontable');
           var finalExtremaArray = handsontable.getData();
+
+          // save data to DataManger service to pass it to the next step
           DataManager.data.extrema = finalExtremaArray;
           DataManager.data.filmSpectrum = $scope.filmSpectum;
+          DataManager.data.envelopes.minima = $scope.minimaEnvelope;
+          DataManager.data.envelopes.maxima = $scope.maximaEnvelope;
+
           $scope.finalExtremaArray = finalExtremaArray;
           DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv', 'extrema').then(function(result) {
             console.log('debug', '$scope.downloadFinalExtremaTable(): save file success, link = ' + result.link);
@@ -286,7 +291,7 @@
         }
 
         $scope.continueToApplyingSwanepoelFormulas = function() {
-          $scope.saveFinalExtremaTable(); // save to server
+          $scope.saveFinalExtremaTable(); // save to server & DataManager
           $scope.$emit('switchPage', {
             pageName: 'applying-swanepoel-formulas'
           });
@@ -315,8 +320,10 @@
           $scope.filmSpectrum = result.data; 
           $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
 
-          $scope.substrateRefractiveIndex = INITIAL_SUBSTRATE_REFRACTIVE_INDEX;
           // changing substrateRefractiveIndex will launch showRawFilmSpectrum(), because its being $watched.
+          //$scope.substrateRefractiveIndex = INITIAL_SUBSTRATE_REFRACTIVE_INDEX;
+
+          showRawFilmSpectrum();
         }); 
       }
 
@@ -356,13 +363,13 @@
 
         plotData[0] = { data: $scope.filmSpectrum, label: "film spectrum"};
         // setting up substrate refracting index horizontal line
-        plotOptions.grid.markings = [
-          {
-            color: '#5d5',
-            lineWidth: 2,
-            yaxis: { from: $scope.substrateRefractiveIndex, to: $scope.substrateRefractiveIndex }
-          }
-        ];
+        //plotOptions.grid.markings = [
+        //  {
+        //    color: '#5d5',
+        //    lineWidth: 2,
+        //    yaxis: { from: $scope.substrateRefractiveIndex, to: $scope.substrateRefractiveIndex }
+        //  }
+        //];
         Plotter.plot('experimental-data', plotData, plotOptions);
         handsontableOptions.data = $scope.filmSpectrum;
         $('#raw-film-spectrum-table').handsontable(handsontableOptions);
@@ -389,97 +396,16 @@
         // plotData[0] should be  film spectrum
         plotData[1] = {data: $scope.minima, label: "minima", points: {radius: 4}};
         plotData[2] = {data: $scope.maxima, label: "maxima", points: {radius: 4}};
-        plotOptions.grid.markings[1] = 
+        plotOptions.grid.markings = [];
+        plotOptions.grid.markings[0] = 
           { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaLeftBoundary, to: $scope.extremaLeftBoundary} };
-        plotOptions.grid.markings[2] = 
+        plotOptions.grid.markings[1] = 
           { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaRightBoundary, to: $scope.extremaRightBoundary} };
         plotOptions.grid.clickable = true;
 
         Plotter.plot('extrema-plot', plotData, plotOptions);
       };
 
-      /**
-       *  Binds hover and click events to extrema plot.
-       *  Hover shows mouse coordinates.
-       *  Left click adds minima, right click adds maxima.
-       *  Click on extrema removes it. 
-       */
-      function bindListenersToExtremaPlot() {
-        
-        /*** auxilary functions ***/
-
-        /**
-         *  Removes extrema point.
-         *  @param point array [x,y] coordinates of extrema to remove.
-         */
-        var removeExtrema = function(point) {
-          var index = DataManager.indexOfPoint($scope.minima, point);
-          if (index > -1) {
-            $scope.minima.splice(index, 1);
-            plotExtrema();
-            showExtremaTable();
-          } else {
-            index = DataManager.indexOfPoint($scope.maxima, point);
-            if (index > -1) {
-              $scope.maxima.splice(index, 1)
-              plotExtrema();
-              showExtremaTable();
-            }
-          }
-        }
-
-        /******************************/
-
-        var mousePosition = {x: 0, y: 0};
-        var clickItem;
-
-        // enable showing mouse coordinates
-        $("#extrema-plot").bind("plothover", function (event, pos, item) {
-          mousePosition.x = pos.x;
-          mousePosition.y = pos.y;
-          clickItem = item; 
-          var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
-          $("#extrema-plot-mouse-coordinates").text(str);
-        });
-        
-        // disable context menu for right click
-        $('#extrema-plot').bind('contextmenu', function(event) {
-          return false;
-        });
-
-        // enable add/remove extrema functionality to plot
-        $("#extrema-plot").mousedown(function(event) {
-          console.log('plot click, event.which = ' + event.which + ', mousePosition.x = ' + mousePosition.x);
-          if(clickItem && clickItem.series.label != 'film spectrum') {
-            // user clicked on extrema, remove it 
-            removeExtrema(clickItem.datapoint);
-          } else {
-            if(clickItem) { // clicked on film spectra point
-              var x = clickItem.datapoint[0];
-              var y = clickItem.datapoint[1];
-            } else { // clicked on empty space
-              var x = mousePosition.x;
-              var y = mousePosition.y;
-            }
-            // add maxima or minima
-            switch(event.which) {
-              case 1: // left button
-                // add minima
-                $scope.minima.push([x, y]);
-                plotExtrema();
-                showExtremaTable();
-                break;
-              case 3: // right button
-                // add maxima
-                $scope.maxima.push([x, y]);
-                plotExtrema();
-                showExtremaTable();
-                return false;
-                break;
-            }
-          }
-        });
-      }
 
       /**
        * Plots envelopes together with all previous data.
@@ -556,7 +482,10 @@
          switch (calculationProgressPoint) {
            case 'calculatingExtrema':
              // extrema use plotData up to plotData[2], so clear everything that is later
-             plotData = plotData.slice(0, 3)
+             plotData = plotData.slice(0, 3);
+             break;
+           case 'extremaFound':
+             plotData = plotData.slice(0, 4);
              break;
          }
        }
@@ -567,5 +496,91 @@
        var clone = function(obj) {
          return jQuery.extend({}, obj);
        }
+
+      /**
+       *  Binds hover and click events to extrema plot.
+       *  Hover shows mouse coordinates.
+       *  Left click adds minima, right click adds maxima.
+       *  Click on extrema removes it. 
+       */
+      function bindListenersToExtremaPlot() {
+        
+        /*** auxilary functions ***/
+
+        /**
+         *  Removes extrema point.
+         *  @param point array [x,y] coordinates of extrema to remove.
+         */
+        var removeExtrema = function(point) {
+          var index = DataManager.indexOfPoint($scope.minima, point);
+          if (index > -1) {
+            $scope.minima.splice(index, 1);
+            plotExtrema();
+            showExtremaTable();
+          } else {
+            index = DataManager.indexOfPoint($scope.maxima, point);
+            if (index > -1) {
+              $scope.maxima.splice(index, 1)
+              plotExtrema();
+              showExtremaTable();
+            }
+          }
+        }
+
+        /******************************/
+
+        var mousePosition = {x: 0, y: 0};
+        var clickItem;
+
+        // enable showing mouse coordinates
+        $("#extrema-plot").bind("plothover", function (event, pos, item) {
+          mousePosition.x = pos.x;
+          mousePosition.y = pos.y;
+          clickItem = item; 
+          var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+          $("#extrema-plot-mouse-coordinates").text(str);
+        });
+        
+        // disable context menu for right click
+        $('#extrema-plot').bind('contextmenu', function(event) {
+          return false;
+        });
+
+        // enable add/remove extrema functionality to plot
+        $("#extrema-plot").mousedown(function(event) {
+          if ($scope.calculationProgress.envelopesFound) {
+            $scope.$apply(function(){
+              resetCalculationProgressTo('extremaFound');
+            });
+          }
+          console.log('plot click, event.which = ' + event.which + ', mousePosition.x = ' + mousePosition.x);
+            if(clickItem) { // clicked on film spectra point
+              var x = clickItem.datapoint[0];
+              var y = clickItem.datapoint[1];
+            } else { // clicked on empty space
+              var x = mousePosition.x;
+              var y = mousePosition.y;
+            }
+            // add maxima or minima
+            switch(event.which) {
+              case 1: // left button
+                // add minima
+                $scope.minima.push([x, y]);
+                plotExtrema();
+                showExtremaTable();
+                break;
+              case 2: // third button (wheel)
+                removeExtrema([x,y]);
+                break;
+              case 3: // right button
+                // add maxima
+                $scope.maxima.push([x, y]);
+                plotExtrema();
+                showExtremaTable();
+                return false;
+                break;
+            }
+        });
+      }
     }); // end CalculationCtrl
 })(); // end closure

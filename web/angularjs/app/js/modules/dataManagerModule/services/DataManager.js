@@ -9,15 +9,29 @@
   app.service('DataManager', function($q, FileManager) {
     var self = this;
 
+    /**
+     * Extrema table column numbers
+     */
+    this.N_1_COLUMN = 3;
+    this.D_1_COLUMN = 4;
+    this.M_0_COLUMN = 5;
+    this.M_COLUMN = 6;
+    this.D_2_COLUMN = 7;
+    this.N_2_COLUMN = 8;
+
     this.data = {
       /**
        *  Extrema for applying formulas in format
        *  [wavelength, T_min, T_max]
+       *
        *  Is updated when extrema calculations are saved 
        */
       extrema: null,
-
-      filmSpectrum: null
+      filmSpectrum: null,
+      envelopes: {
+        minima: null,
+        maxima: null
+      }
     };
 
     /**
@@ -59,15 +73,25 @@
         }
         if(emptyRowsCount == tableDataArray[i].length) {
           console.log('debug', 'DataManager.filterUserInput(): found empty row');
+          console.log('debug', 'Data.Manager.filterUserInput(): tableDataArray[i] = ' + tableDataArray[i]);
           badRowsIndexes.push(i);
         }
       }
       console.log('debug', 'DataManager.filterUserInput(): bad row indexes = ' + badRowsIndexes);
-      for(var i=0; i<badRowsIndexes.length; i++) {
-        console.log('debug', 'DataManager.filterUserInput(): removing bad row, index = ' + badRowsIndexes[i]);
-        tableDataArray.splice(badRowsIndexes[i], 1);
+      if (badRowsIndexes.length < 1) { // if no bad rows
+        return tableDataArray;
+      } else { // if there are bad rows
+        var filteredTable = [];
+        for(var i=0; i<tableDataArray.length; i++) {
+          if (badRowsIndexes.indexOf(i) > -1) { 
+            console.log('debug', 'DataManager.filterUserInput(): removing bad row, index = ' + badRowsIndexes[i]);
+            console.log('debug', 'Data.Manager.filterUserInput(): tableDataArray[i] = ' + tableDataArray[i]);
+          } else {
+            filteredTable.push(tableDataArray[i]);
+          }
+        }
+        return filteredTable;
       }
-      return tableDataArray;
     }
 
     /**
@@ -105,7 +129,7 @@
     }
 
     /**
-     *  Creates maxima[[wavelength1, T_max2,], [wavelength2, T_max2], ...] array
+     *  Creates maxima [[wavelength1, T_max2,], [wavelength2, T_max2], ...] array
      *  from [[wavelength1, T_min1, T_max1,], [wavelength2, T_min2, T_max2]] array
      */
     this.extractMaxima = function(extremaArray) {
@@ -116,6 +140,19 @@
         maxima.push([ wavelength, T ]); 
       }
       return maxima;
+    }
+    /**
+     *  Creates [[wavelegnth1, n1], [wavelength2, n2], ...] array from
+     *  calculationResultsArray
+     */
+    this.extractRefractiveIndex = function(calculationResultsArray) {
+      var refractiveIndex = [];
+      for(var i=0; i<calculationResultsArray.length; i++) {
+        var wavelength = parseFloat(calculationResultsArray[i][0]);
+        var n = parseFloat(calculationResultsArray[i][self.N_2_COLUMN]);
+        refractiveIndex.push([ wavelength, n ]); 
+      }
+      return refractiveIndex;
     }
 
     this.extractColumnFromTable = function(tableArray, columnNumber) {
@@ -250,6 +287,8 @@
     }
 
     /** saveFileFromArray
+     *
+     *  Saves array to .csv file.
      *
      *  @return Promise object with response.link = link to uploaded file
      */

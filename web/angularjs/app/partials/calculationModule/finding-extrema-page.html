@@ -7,7 +7,9 @@
     ng-hide="calculationProgress.filmSpectrumFileUploaded"
   ></div>
 
+  <!-- trash
   <div>Substrate T: <input type="text" ng-model="substrateRefractiveIndex"</div>
+  -->
 
   <div raw-experimental-data ng-show="calculationProgress.filmSpectrumDataLoaded" class="calculation-results"></div>
   <button class="calculation-flow" ng-click="findExtrema()">Find extrema</button>
@@ -72,7 +74,7 @@
       ng-click="saveFinalExtremaTable()"
       ng-show="calculationProgress.pseudoExtremaFound"
     >
-      Get download link for final extrema table
+      Get download link for this table
     </button>
 
     <a target="_blank" href="{[{finalExtremaFileLink}]}" ng-show="finalExtremaFileReady">

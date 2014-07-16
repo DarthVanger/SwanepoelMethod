@@ -6,18 +6,24 @@
     <!-- extrema plot -->
     <div class="plot-container">
       <h2>Extrema</h2>
-      <div>left click to add minima, right click to add maxima</div>
-      <div>click on extrema point to remove it</div>
+      <div class="attention">Please, <b>manually</b> add extra points for envelope edges!</div>
+      <div>left click to add minimum, right click to add maximum</div>
+      <div>third mouse button (mousewheel) click to remove extremum</div>
+
+      <!-- boundaries -->
+      <hr />
+      <div class="vertical-margins">extrema left boundary: <input type="text" ng-model="extremaLeftBoundary" /></div>
+      <div class="vertical-margins">extrema right boundary: <input type="text" ng-model="extremaRightBoundary" /></div>
+      <!-- not using y-threshold anymore
+      <div class="vertical-margins">extrema search Y-axis threshold (is used to discard noise extrema): <input type="text" ng-model="extremaYThreshold" /></div>
+      -->
+      <button class="calculation-flow secondary" ng-click="recalculateExtrema()">Recalculate extrema considering new boundaries</button>
+
+      <!-- extrema-plot -->
       <div id="extrema-plot" class="data-plot"></div>
     </div>
     <div>mouse coordinates on plot: <span id="extrema-plot-mouse-coordinates"></span></div>
 
-    <div class="vertical-margins">extrema left boundary: <input type="text" ng-model="extremaLeftBoundary" /></div>
-    <div class="vertical-margins">extrema right boundary: <input type="text" ng-model="extremaRightBoundary" /></div>
-    <!-- not using y-threshold anymore
-    <div class="vertical-margins">extrema search Y-axis threshold (is used to discard noise extrema): <input type="text" ng-model="extremaYThreshold" /></div>
-    -->
-    <button class="calculation-flow" ng-click="recalculateExtrema()">Recalculate extrema considering new boundaries</button>
 
     <!-- Extrema tables -->
       <!-- Minima table -->

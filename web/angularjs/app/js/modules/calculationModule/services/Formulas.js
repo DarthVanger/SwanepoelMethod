@@ -6,7 +6,10 @@
   /** Formulas service
    *  Provides methods to calculate the stuff, using Swanepoel formulas.
    */
-   app.service('Formulas', function() {
+   app.service('Formulas', function(DataManager) {
+
+     var PLANK_CONST = 6.582 * Math.pow(10, -16); // eV * sec
+     var LIGHT_SPEED = 3 * Math.pow(10, 8); // m/s
 
      /**
       * Calculates substrate refractive index
@@ -96,6 +99,31 @@
       }
       return d2Array;
     }
+
+    this.finalRefractiveIndex = function(calculationResultsArray, averageFilmThicknessFinal) {
+      var d2Avrg = averageFilmThicknessFinal;
+      var n2Array = [];
+      for(var i=0; i<calculationResultsArray.length; i++) {
+        var wavelength = calculationResultsArray[i][0];
+        var m = calculationResultsArray[i][DataManager.M_COLUMN];
+        var n2 = ( m * wavelength ) / (2 * d2Avrg);
+        n2Array.push(n2);
+      }
+      return n2Array;
+    }
+
+    this.convertWavelengthsToEnergies = function(wavelengths) {
+      var energies = [];
+      for (var i=0; i<wavelengths.length; i++) {
+        var energy = ( PLANK_CONST * LIGHT_SPEED ) / ( wavelengths[i] * Math.pow(10, -9) );
+        energies.push(energy);
+      }
+      return energies;
+    }
+
+    /****************************************************************/
+    /*********************** Private methods ************************/
+    /****************************************************************/
 
     var closestHalfInteger = function(number) {
       var middle;
