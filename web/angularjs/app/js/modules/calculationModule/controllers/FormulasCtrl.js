@@ -7,7 +7,7 @@
 
    var app = angular.module('calculationModule');
 
-   app.controller('FormulasCtrl', function($scope, DataManager, Formulas, Plotter, Statistics) {
+   app.controller('FormulasCtrl', function($scope, DataManager, Formulas, Plotter, Statistics, Calculus) {
       var self = this;
 
       var handsontableOptions = {
@@ -27,7 +27,7 @@
         tooltip: true
       };
 
-      var INITIAL_SUBSTRATE_TRANSMISSION = .92;
+      var INITIAL_SUBSTRATE_TRANSMISSION = .88;
 
       
       /**
@@ -196,6 +196,8 @@
         //console.log('debug', 'd_1 = ' + d_1);
         $scope.averageFilmThicknessFirstApproximation = Statistics.average(d_1);
         $scope.filmThicknessFirstApproximationError = Statistics.standardDeviation(d_1);
+        $scope.filmThicknessFirstApproximationRelativeError = 
+          $scope.filmThicknessFirstApproximationError / $scope.averageFilmThicknessFirstApproximation * 100;
         $scope.calculationProgress.averageFilmThicknessFirstApproximationReady = true;
       }
 
@@ -251,6 +253,8 @@
            console.log('debug', 'd_2 = ' + d_2);
            $scope.averageFilmThicknessFinal = Statistics.average(d_2);
            $scope.filmThicknessFinalError = Statistics.standardDeviation(d_2);
+           $scope.finalFilmThicknessRelativeError =
+             $scope.filmThicknessFinalError / $scope.averageFilmThicknessFinal * 100;
            $scope.calculationProgress.averageFilmThicknessFinalReady = true;
          };
 
@@ -279,7 +283,54 @@
             console.log('debug', 'FormulasCtrl.calculateSingleOscillatorModel() called');
             var wavelengths = DataManager.extractColumnFromTable($scope.calculationResultsArray, 0);
             var energies = Formulas.convertWavelengthsToEnergies(wavelengths);
-            console.log('energies = ' + energies);
+            //console.log('energies = ' + energies);
+            var n = DataManager.extractColumnFromTable($scope.calculationResultsArray, DataManager.N_2_COLUMN);
+            var y = n.map(function(n) { return (1 / ( Math.pow(n,2) - 1) ) });
+            var x = energies.map(function(e) { return Math.pow(e, 2) });
+
+            var regressionLineCoef = Statistics.regressionLineCoef(x, y);
+            $scope.regressionLineCoef = regressionLineCoef;
+            console.log('debug', 'regressionLineCoef = ' + regressionLineCoef);
+            
+            /* finding E_0 and E_d from regression line coef */
+            var a = regressionLineCoef.a;
+            var b = regressionLineCoef.b;
+
+            $scope.singleOscillatorEnergy = Math.sqrt(-a/b);
+            $scope.dispersionEnergy = Math.sqrt(-1/(a*b));
+            $scope.taucGap = $scope.singleOscillatorEnergy/2;
+
+            /* plotting */
+
+            var regressionLine = Calculus.buildLine(regressionLineCoef.a, regressionLineCoef.b, 0, 6);
+
+            $scope.calculationProgress.singleOscillatorReady = true;
+
+            // make single array of data for plotting
+            var plotPoints = [];
+            for(var i=0; i<x.length; i++) {
+              plotPoints.push([ x[i], y[i] ]);
+            }
+
+            plotData = [
+              {data: regressionLine, label: 'regression line'},
+              {data: plotPoints, points: {radius: 4}}
+            ];
+            
+            var thisPlotOptions = {
+              xaxis: {
+                axisLabel: 'E^2',
+                axisLabelFontSizePixels: 18,
+                labelHeight: 30
+              },
+              yaxis: {
+                axisLabel: '1/(n^2 - 1)',
+                axisLabelFontSizePixels: 18,
+                labelWidth: 30
+              }
+            }
+
+            Plotter.plot('single-oscillator-plot', plotData, thisPlotOptions);
           }
 
       /****************************************************************/

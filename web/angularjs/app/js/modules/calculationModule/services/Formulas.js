@@ -8,7 +8,7 @@
    */
    app.service('Formulas', function(DataManager) {
 
-     var PLANK_CONST = 6.582 * Math.pow(10, -16); // eV * sec
+     var PLANK_CONST = 4.135 * Math.pow(10, -15); // eV * sec
      var LIGHT_SPEED = 3 * Math.pow(10, 8); // m/s
 
      /**

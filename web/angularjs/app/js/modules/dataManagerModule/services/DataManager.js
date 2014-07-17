@@ -34,6 +34,8 @@
       }
     };
 
+    this.dataInputSettings;
+
     /**
      *  Parses csv string to double array.
      *  
@@ -212,20 +214,52 @@
      *  and normalizes Transmission.
      */
     var convertFilmSpectrum = function(filmSpectrum) {
-      filmSpectrum = self.convertToNanometer(filmSpectrum);
-      filmSpectrum = normalizeTransmission(filmSpectrum);
+      if (self.dataInputSettings) {
+        if (self.dataInputSettings.convertToNanometers) {
+          filmSpectrum = self.convertToNanometers(filmSpectrum);
+        }
+        if (self.dataInputSettings.convertFromPercents) {
+          filmSpectrum = self.convertTransmissionFromPercents(filmSpectrum);
+        }
+      }
+      return filmSpectrum;
+    }
+
+    /**
+     *  Converts from 1/cm to Nanometers
+     */
+    this.convertToNanometers = function(filmSpectrum) {
+      for(var i=0; i<filmSpectrum.length; i++) {
+        filmSpectrum[i][0] = 10000000 / filmSpectrum[i][0];
+      }
+      return filmSpectrum;
+    }
+    this.undoConvertToNanometers = function(filmSpectrum) {
+      for(var i=0; i<filmSpectrum.length; i++) {
+        filmSpectrum[i][0] = 10000000 / filmSpectrum[i][0] ;
+      }
       return filmSpectrum;
     }
 
     /**
      *  Divides Transmission by 100, making it in [0, 1] range.
      */
-    var normalizeTransmission = function(filmSpectrum) {
+    this.convertTransmissionFromPercents = function(filmSpectrum) {
       var normalizedFilmSpectrum = [];
       for(var i=0; i<filmSpectrum.length; i++) {
         var wavelength = filmSpectrum[i][0];
         var T = filmSpectrum[i][1];
         var TNormalized = T/100;
+        normalizedFilmSpectrum.push([wavelength, TNormalized]);
+      }
+      return normalizedFilmSpectrum;
+    }
+    this.undoConvertTransmissionFromPercents = function(filmSpectrum) {
+      var normalizedFilmSpectrum = [];
+      for(var i=0; i<filmSpectrum.length; i++) {
+        var wavelength = filmSpectrum[i][0];
+        var T = filmSpectrum[i][1];
+        var TNormalized = T * 100;
         normalizedFilmSpectrum.push([wavelength, TNormalized]);
       }
       return normalizedFilmSpectrum;
@@ -309,12 +343,6 @@
      return deferred.promise;
     }
 
-    this.convertToNanometer = function(filmSpectrum) {
-      for(var i=0; i<filmSpectrum.length; i++) {
-        filmSpectrum[i][0] = 10000000 / filmSpectrum[i][0];
-      }
-      return filmSpectrum;
-    }
 
     /**
      *  Joins 1d array with 2d table array.

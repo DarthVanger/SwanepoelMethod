@@ -28,13 +28,14 @@
         columns: [{type: 'numeric', format: '0.0'}, {type: 'numeric', format: '0.00'},]
       };
 
-      //var plotOptions = {
-      //  grid: {
-      //    hoverable: true,
-      //    markings : []
-      //  }
-      //};
-      
+      /**
+       *  Data input settings 
+       */
+      $scope.dataInputSettings = {};
+      $scope.dataInputSettings.convertToNanometers = false;
+      $scope.dataInputSettings.convertFromPercents = true;
+      // send the dataInputSettings to DataManager
+      DataManager.dataInputSettings = $scope.dataInputSettings;
 
       /**
        *  film spectrum data in double array format.
@@ -61,7 +62,7 @@
 
       // extrema scope variables
       $scope.extrema = 'not calculated yet';
-      $scope.extremaLeftBoundary = 600;
+      $scope.extremaLeftBoundary = 400;
       $scope.extremaRightBoundary;
       //$scope.extremaYThreshold = .5;
 
@@ -88,6 +89,33 @@
          *  Load some initial data to show not blank page
          */ 
         loadInitialExperimentalData(); 
+
+        /**
+         *  Update film spectrum considering new data format settings
+         */
+        $scope.$watch('dataInputSettings.convertToNanometers', function(newVal, oldVal) {
+          console.log('debug', 'convertToNanometers changed, newVal = ' + newVal + ', oldVal = ' + oldVal);
+          if(newVal) {
+            console.log('debug', 'converting to nanometers');
+            $scope.filmSpectrum = DataManager.convertToNanometers($scope.filmSpectrum);
+          } else {
+            console.log('debug', 'undo converting to nanometers');
+            $scope.filmSpectrum = DataManager.undoConvertToNanometers($scope.filmSpectrum);
+          }
+          showRawFilmSpectrum();
+        });
+        $scope.$watch('dataInputSettings.convertFromPercents', function(newVal, oldVal) {
+          console.log('debug', 'convertFromPercents changed, newVal = ' + newVal + ', oldVal = ' + oldVal);
+          if(newVal) {
+            $scope.filmSpectrum = DataManager.convertTransmissionFromPercents($scope.filmSpectrum);
+          } else {
+            $scope.filmSpectrum = DataManager.undoConvertTransmissionFromPercents($scope.filmSpectrum);
+          }
+          showRawFilmSpectrum();
+        });
+        //$scope.updateFilmSpectrumConsideringNewSettings = function() {
+
+        //}
       
         /****** Listen for spectra upload *******/
 

@@ -87,6 +87,7 @@
     <div ng-show="calculationProgress.averageFilmThicknessFirstApproximationReady">
       <span>\( \bar{d_1} = \) </span>{[{averageFilmThicknessFirstApproximation | number: 2}]} nm <br />
       <span>\( \sigma_{d_1} = \)</span> {[{filmThicknessFirstApproximationError | number: 2}]} nm
+      ({[{filmThicknessFirstApproximationRelativeError | number: 2 }]}%)
     </div>
   </div> <!-- end film-thickness-first-approximation -->
 
@@ -167,6 +168,7 @@
       <div>
         <span>\( \bar{d_2} = \) </span>{[{averageFilmThicknessFinal | number: 2}]} nm <br />
         <span>\( \sigma_{d_2} = \)</span> {[{filmThicknessFinalError | number: 2}]} nm
+        ({[{finalFilmThicknessRelativeError | number: 2 }]}%)
       </div>
       <br />
       <!-- button: calculate average of final film thickness -->
@@ -207,8 +209,26 @@
       Calculate single-oscillator model
     </button>
     <br />
-
   </div>
+
+  <!-- single-oscillator-model -->
+  <div ng-show="calculationProgress.singleOscillatorReady">
+    <div class="plot-container">
+      <h2>Single oscillator model</h2>
+      <div id="single-oscillator-plot" class="data-plot"></div>
+    </div>
+    <br />
+    <br />
+    Regression line coefficients:
+    <span>\( a = \)</span>{[{regressionLineCoef.a | number: 2}]},
+    <span>\( b = slope = \)</span> {[{regressionLineCoef.b | number: 3}]} <br />
+
+    <span>\( n(0) = \)</span> {[{regressionLineCoef.a | number: 2}]} <br />
+    single-oscillator energy <span>\( E_0 = \)</span> {[{singleOscillatorEnergy | number: 2}]} eV <br />
+    dispersion energy <span>\( E_d = \)</span> {[{dispersionEnergy | number: 2}]} eV <br />
+    <span>\( E_g^{(opt)} \approx \dfrac{E_0}{2} = \)</span> {[{taucGap | number: 2}]} eV
+  </div>
+
 
 
   <!-- debug -->

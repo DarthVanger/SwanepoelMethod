@@ -131,11 +131,26 @@
        }
        callback(spline);
      };
+
+     /**
+      * Build line
+      */
+     this.buildLine = function(a, b, startX, endX) {
+       var NUMBER_OF_POINTS = 100;
+       var step = (endX - startX) / NUMBER_OF_POINTS;
+       var line = [];
+       for(var x=startX; x<endX; x+=step) {
+         var y = a + b*x;
+         line.push([x,y]); 
+       }
+       return line;
+     }
   }); // end Calculus service
 
 
-
+  /****************************************/
   /********** Private methods *************/
+  /****************************************/
 
   /**
    *  Finds y-value at x closest to @param x

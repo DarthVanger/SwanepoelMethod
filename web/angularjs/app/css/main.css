@@ -82,8 +82,8 @@ button:active, input:focus {
 }
 
 .data-plot {
-  height: 500px;
-  width: 900px;
+  height: 600px;
+  width: 1200px;
   margin: 2em 0 2em 0;
 }
 button.calculation-flow, .calculation-flow-button {
