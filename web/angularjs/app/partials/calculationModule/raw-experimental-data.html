@@ -1,6 +1,3 @@
-<div ng-click="showRawFilmSpectrumTable = !showRawFilmSpectrumTable" class="points-table-show-hide-button">
-  show/hide film spectrum data table
-</div>
-<div id="raw-film-spectrum-table" ng-show="showRawFilmSpectrumTable"></div>
-<div id="experimental-data" class="data-plot"></div>
 
+  <input type="checkbox" ng-model="dataInputSettings.convertToNanometers" />Convert wavelengths from 1/cm to nanometers <br />
+  <input type="checkbox" ng-model="dataInputSettings.convertFromPercents" />Convert transmission from percents to [0..1]<br />

@@ -1,3 +1,20 @@
+
+<div id="page-body">
+  <img id="button-back" ng-src="{[{IMG_PATH}]}/arrow-back-2.png"></img>
+  <div id="content">
+    <div id="step-directives">
+    </div>
+
+    <div id="data-plot" class="data-plot"></div>
+    <div ng-click="showDataTable = !showDataTable" class="points-table-show-hide-button">
+      show/hide data table
+    </div>
+    <div id="data-table"></div>
+
+  </div>
+  <img id="button-forward" ng-src="{[{IMG_PATH}]}/arrow-forward-2.png"></img>
+</div>
+
   <input type="checkbox" ng-model="dataInputSettings.convertToNanometers" />Convert wavelengths from 1/cm to nanometers <br />
   <input type="checkbox" ng-model="dataInputSettings.convertFromPercents" />Convert transmission from percents to [0..1]<br />
   <div film-spectrum-upload-form></div>
@@ -13,7 +30,6 @@
   <div>Substrate T: <input type="text" ng-model="substrateRefractiveIndex"</div>
   -->
 
-  <div raw-experimental-data ng-show="calculationProgress.filmSpectrumDataLoaded" class="calculation-results"></div>
   <button class="calculation-flow" ng-click="findExtrema()">Find extrema</button>
 
   <!-- loading: calculating extrema -->

@@ -1,0 +1,37 @@
+#site-body {
+}
+#page-body {
+  border: solid black 1px;
+  text-align: center;
+  width: 100%;
+  height: 600px;
+}
+#content {
+  display: inline-block;
+  width: 85%;
+  height: 100%;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 0 20px 0 20px;
+}
+#button-back, #button-forward {
+  display: inline-block;
+  vertical-align: middle;
+  width: 50px;
+  cursor: pointer;
+}
+#message-and-controls {
+}
+#step-directives {
+  height: 19%;
+  border: 1px solid pink;
+  text-align: left;
+  overflow: hidden;
+  font-size: 1em;
+  line-height: 1.2em;
+  font-family: Arial;
+}
+#data-plot {
+  height: 80%;
+  width: 100%;
+}

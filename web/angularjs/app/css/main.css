@@ -4,6 +4,7 @@
 @import url("fonts.css");
 @import url("general.css");
 @import url("calculation.css");
+@import url("layout.css");
 
 html, body {
   padding: 0;
@@ -73,19 +74,11 @@ button:active, input:focus {
   border-left: solid #002139 3px;
 }
 /*******************/
-#site-body {
-  padding: 20px;
-}
 
 .calculation-error {
   color: #b10490;
 }
 
-.data-plot {
-  height: 600px;
-  width: 1200px;
-  margin: 2em 0 2em 0;
-}
 button.calculation-flow, .calculation-flow-button {
   //background-color: #2090ff;
   background-color: #111;
@@ -155,4 +148,3 @@ ul.data-points li div.row1 {
 .vertical-margins {
   margin: 1em 0 1em 0;
 }
-

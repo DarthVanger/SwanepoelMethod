@@ -1,6 +1,5 @@
   /** CalculationFlowCtrl
-   * *  Controls the calculation flow (process),
-   *  responds to user actions.
+   *  Controls the calculation flow (process), responds to user actions.
    *
    */
 (function() { 
@@ -8,7 +7,7 @@
 
    var app = angular.module('calculationModule');
 
-   app.controller('CalculationFlowCtrl', function($scope, DataManager, Calculus, Formulas, Plotter) {
+   app.controller('CalculationFlowCtrl', function($scope, $http, $compile, DataManager, Calculus, Formulas, Plotter) {
       var self = this;
 
       // plot data and options for 'flot' plotting tool
@@ -398,9 +397,14 @@
         //    yaxis: { from: $scope.substrateRefractiveIndex, to: $scope.substrateRefractiveIndex }
         //  }
         //];
-        Plotter.plot('experimental-data', plotData, plotOptions);
+
+        $http.get('/angularjs/app/partials/calculationModule/raw-experimental-data.html').then(function(result) {
+          $('#step-directives').html($compile(result.data)($scope));
+        });
+
+        Plotter.plot('data-plot', plotData, plotOptions);
         handsontableOptions.data = $scope.filmSpectrum;
-        $('#raw-film-spectrum-table').handsontable(handsontableOptions);
+        $('#data-table').handsontable(handsontableOptions);
       };
 
       /**
