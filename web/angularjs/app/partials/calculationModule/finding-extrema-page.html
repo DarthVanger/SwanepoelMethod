@@ -1,8 +1,8 @@
-
 <div id="page-body">
   <img id="button-back" ng-src="{[{IMG_PATH}]}/arrow-back-2.png"></img>
   <div id="content">
-    <div id="step-directives">
+    <div ui-view id="step-directives">
+      <a ui-sref="finding-extrema.step1">load step 1 </a>
     </div>
 
     <div id="data-plot" class="data-plot"></div>
@@ -15,8 +15,6 @@
   <img id="button-forward" ng-src="{[{IMG_PATH}]}/arrow-forward-2.png"></img>
 </div>
 
-  <input type="checkbox" ng-model="dataInputSettings.convertToNanometers" />Convert wavelengths from 1/cm to nanometers <br />
-  <input type="checkbox" ng-model="dataInputSettings.convertFromPercents" />Convert transmission from percents to [0..1]<br />
   <div film-spectrum-upload-form></div>
 
   <!-- loading: film spectrum file -->

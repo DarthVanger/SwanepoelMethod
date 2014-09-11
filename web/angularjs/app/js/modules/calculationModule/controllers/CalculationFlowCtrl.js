@@ -11,8 +11,8 @@
       var self = this;
 
       // plot data and options for 'flot' plotting tool
-      var plotData = [];
-      var plotOptions = {
+      $scope.plotData = [];
+      $scope.plotOptions = {
         lines: { show: false},
         points: { show: true, fill: true, radius: 1, symbol: 'circle' },
         grid: { hoverable: true },
@@ -69,8 +69,8 @@
       
       var self = this;
 
-      $(document).ready(function () {
-        console.log('debug', 'document ready, loading inital exp data');
+      //$(document).ready(function () {
+        console.log('debug', 'CalcFlowCtr: loading inital exp data');
 
         bindListenersToExtremaPlot();
 
@@ -87,11 +87,21 @@
         /**
          *  Load some initial data to show not blank page
          */ 
-        loadInitialExperimentalData(); 
+        //loadInitialExperimentalData(); 
+
+
+        // DEPRECATED
+        //$scope.loadStep1 = function() {
+        //  console.log("CalcFlowCtrl: Loading step1 view");
+        //  $http.get('/angularjs/app/partials/calculationModule/step-1-adjust-raw-experimental-data.html').then(function(result) {
+        //    $('#step-directives').html($compile(result.data)($scope));
+        //  });
+        //}
 
         /**
          *  Update film spectrum considering new data format settings
          */
+         /*
         $scope.$watch('dataInputSettings.convertToNanometers', function(newVal, oldVal) {
           console.log('debug', 'convertToNanometers changed, newVal = ' + newVal + ', oldVal = ' + oldVal);
           if(newVal) {
@@ -103,6 +113,8 @@
           }
           showRawFilmSpectrum();
         });
+        */
+        /*
         $scope.$watch('dataInputSettings.convertFromPercents', function(newVal, oldVal) {
           console.log('debug', 'convertFromPercents changed, newVal = ' + newVal + ', oldVal = ' + oldVal);
           if(newVal) {
@@ -115,6 +127,7 @@
         //$scope.updateFilmSpectrumConsideringNewSettings = function() {
 
         //}
+        */
       
         /****** Listen for spectra upload *******/
 
@@ -324,7 +337,7 @@
           });
         }
       
-      }); // end document.ready()
+      //}); // end document.ready()
 
 
 
@@ -383,6 +396,7 @@
       /** showRawFilmSpectrum
        *  Shows raw experimental data with the plot.
        */
+       /*
       var showRawFilmSpectrum = function() {
         console.log('debug', 'showRawFilmSpectrum() called');
         $scope.calculationProgress.filmSpectrumFileUploaded = true;
@@ -398,7 +412,7 @@
         //  }
         //];
 
-        $http.get('/angularjs/app/partials/calculationModule/raw-experimental-data.html').then(function(result) {
+        $http.get('/angularjs/app/partials/calculationModule/step-1-adjust-raw-experimental-data.html').then(function(result) {
           $('#step-directives').html($compile(result.data)($scope));
         });
 
@@ -406,6 +420,7 @@
         handsontableOptions.data = $scope.filmSpectrum;
         $('#data-table').handsontable(handsontableOptions);
       };
+      */
 
       /**
        *  Shows extrema table using handsontable

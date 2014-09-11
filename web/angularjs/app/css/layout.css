@@ -31,6 +31,10 @@
   line-height: 1.2em;
   font-family: Arial;
 }
+#step-directives p {
+  margin: 0;
+  padding: 0;
+}
 #data-plot {
   height: 80%;
   width: 100%;

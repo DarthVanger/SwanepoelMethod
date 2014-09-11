@@ -20,11 +20,14 @@
   <script src="{{ bower }}{{ asset('angular-resource/angular-resource.js') }}"></script>
   <script src="{{ bower }}{{ asset('angular-route/angular-route.js') }}"></script>
   <script src="{{ asset('angularjs/app/js/app.js') }}"></script>
-  <script src="{{ asset('angularjs/app/js/controllers/PagesCtrl.js') }}"></script>
+  <!-- angular-ui-router -->
+  <script src="{{ bower }}{{ asset('angular-ui-router/release/angular-ui-router.min.js') }}"></script>
+
   <!-- calculationModule -->
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/calculationModule.js') }}"></script>
     <!-- controllers -->
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/controllers/CalculationFlowCtrl.js') }}"></script>
+    <script src="{{ asset('angularjs/app/js/modules/calculationModule/controllers/steps/Step1AdjustRawExperimentalDataCtrl.js') }}"></script>
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/controllers/FormulasCtrl.js') }}"></script>
     <!-- services -->
     <script src="{{ asset('angularjs/app/js/modules/calculationModule/services/Calculus.js') }}"></script>
@@ -95,7 +98,7 @@
   </div>
 </div>
 
-<div id="site-body" ng-view></div>
+<div id="site-body" ui-view></div>
 
 
 </div>
