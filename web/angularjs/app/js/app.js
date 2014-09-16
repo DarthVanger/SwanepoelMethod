@@ -31,10 +31,20 @@
         templateUrl: '/angularjs/app/partials/calculationModule/finding-extrema-page.html',
         controller: 'CalculationFlowCtrl'
       })
+      .state('finding-extrema.step0', {
+        url: '/step0',
+        templateUrl: '/angularjs/app/partials/calculationModule/step-0-upload-data.html',
+        controller: 'Step0UploadDataCtrl'
+      })
       .state('finding-extrema.step1', {
         url: '/step1',
-        templateUrl: '/angularjs/app/partials/calculationModule/step-1-adjust-raw-experimental-data.html',
-        controller: 'Step1AdjustRawExperimentalDataCtrl'
+        templateUrl: '/angularjs/app/partials/calculationModule/step-1-adjust-uploaded-data.html',
+        controller: 'Step1AdjustUploadedDataCtrl'
+      })
+      .state('finding-extrema.step2', {
+        url: '/step2',
+        templateUrl: '/angularjs/app/partials/calculationModule/step-2-find-extrema.html',
+        controller: 'Step1FindExtremaCtrl'
       });
   });
 

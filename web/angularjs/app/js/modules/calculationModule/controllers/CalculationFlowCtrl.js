@@ -7,8 +7,35 @@
 
    var app = angular.module('calculationModule');
 
-   app.controller('CalculationFlowCtrl', function($scope, $http, $compile, DataManager, Calculus, Formulas, Plotter) {
+   app.controller('CalculationFlowCtrl', function($scope, $http, $compile, $state, DataManager, Calculus, Formulas, Plotter) {
       var self = this;
+
+      /**
+       * Number of step the user is currently viewing
+       */
+      $scope.userStep = 0;
+      /**
+       * Change interface to next step
+       */
+      $scope.goToNextUserStep = function() {
+        if ($scope.userStep < 10) {
+          $scope.userStep++;
+          $state.go('finding-extrema.step' + $scope.userStep);
+        } else {
+          console.log('debug', 'Cant go above last step');
+        }
+      }
+      /**
+       * Change interface to previous step
+       */
+      $scope.goToPreviousUserStep = function() {
+        if ($scope.userStep >= 0) {
+          $scope.userStep--;
+          $state.go('finding-extrema.step' + $scope.userStep);
+        } else {
+          console.log('debug', 'Cant go below step 0');
+        }
+      }
 
       // plot data and options for 'flot' plotting tool
       $scope.plotData = [];

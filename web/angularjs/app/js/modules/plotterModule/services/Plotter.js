@@ -9,6 +9,8 @@
   app.service('Plotter', function() {
     var self = this;
 
+    this.plotId = 'data-plot';
+
     //this.plotHeight = '400px';
     //this.plotWidth = '90%';
     
@@ -38,8 +40,13 @@
 
     this.plot = function(plotId, data, options) {
       console.log('Plotter: plotting to #' + plotId);
+      $('#' + plotId).html('');
       options = jsonConcat(self.plotOptions, options);
       $.plot($('#' + plotId), data, options);
+    }
+
+    this.setPlotToLoadingState = function() {
+      $('#' + self.plotId).html('<img class="loading" src="/angularjs/app/img/loading-icon.gif" />');
     }
     
     var jsonConcat = function(o1, o2) {
