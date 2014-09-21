@@ -28,23 +28,23 @@
     $stateProvider
       .state('finding-extrema', {
         url: '/finding-extrema',
-        templateUrl: '/angularjs/app/partials/calculationModule/finding-extrema-page.html',
+        templateUrl: '/angularjs/app/partials/calculationModule/pages/finding-extrema.html',
         controller: 'CalculationFlowCtrl'
       })
+      .state('finding-extrema.loading', {
+        templateUrl: '/angularjs/app/partials/calculationModule/loading.html'
+      })
       .state('finding-extrema.step0', {
-        url: '/step0',
-        templateUrl: '/angularjs/app/partials/calculationModule/step-0-upload-data.html',
+        templateUrl: '/angularjs/app/partials/calculationModule/steps/step-0-upload-data.html',
         controller: 'Step0UploadDataCtrl'
       })
       .state('finding-extrema.step1', {
-        url: '/step1',
-        templateUrl: '/angularjs/app/partials/calculationModule/step-1-adjust-uploaded-data.html',
+        templateUrl: '/angularjs/app/partials/calculationModule/steps/step-1-adjust-uploaded-data.html',
         controller: 'Step1AdjustUploadedDataCtrl'
       })
       .state('finding-extrema.step2', {
-        url: '/step2',
-        templateUrl: '/angularjs/app/partials/calculationModule/step-2-find-extrema.html',
-        controller: 'Step1FindExtremaCtrl'
+        templateUrl: '/angularjs/app/partials/calculationModule/steps/step-2-find-extrema.html',
+        controller: 'Step2FindExtremaCtrl'
       });
   });
 

@@ -7,29 +7,23 @@
     var self = this;
 
     console.log("Step0 init");
-    loadInitialExperimentalData();
     $scope.uiStep = 0;
 
-    // listen for new film spectrum file upload start to reset calculation progress
+    // listen for new film spectrum file upload start to show 'loading...'
     $scope.$on('NewFilmSpectrumFileUploadStart', function() {
       console.log('debug', 'CalculationFlowCtrl: caught \'NewFilmSpectrumFileUploadStart\'');
+      $scope.loading = true;
       //resetCalculationProgress();
     });
 
     // listen for file upload success, to update the experimental data
     $scope.$on('NewFilmSpectrumFileUploaded', function(event, filename) {
       console.log('debug', 'CalculationController: Catched \'NewFilmSpectrumFileUploaded\' event');
-      // reset calculation progress, because new data was loaded
-      resetCalculationProgress();
-      $scope.calculationProgress.filmSpectrumFileUploaded = true;
       // load new data from file
       DataManager.loadFilmSpectrumFromFile(filename).then(function(result) {
-        $scope.calculationProgress.filmSpectrumDataLoaded = true;
         // update the data
-        $scope.filmSpectrum = result.data;
+        DataManager.data.filmSpectrum = result.data;
         $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
-        // begin with first step again
-        showRawFilmSpectrum();
       });
     });
 

@@ -1,22 +1,30 @@
+#loading-container{
+  text-align: center;
+  height: 2em;
+}
+#loading-container #loading {
+  display: none;
+  background-color: #000;
+  color: white;
+  padding: .5em;
+  border-radius: 0 0 .3em .3em;
+}
 #site-body {
 }
 #page-body {
-  border: solid black 1px;
   text-align: center;
   width: 100%;
-  height: 600px;
 }
 #content {
   display: inline-block;
   width: 85%;
-  height: 100%;
-  overflow: hidden;
-  vertical-align: middle;
+  vertical-align: top;
   margin: 0 20px 0 20px;
 }
 #button-back, #button-forward {
   display: inline-block;
-  vertical-align: middle;
+  padding-top: 250px;
+  vertical-align: top;
   width: 50px;
   cursor: pointer;
 }
@@ -24,19 +32,19 @@
 }
 #step-directives {
   height: 19%;
-  border: 1px solid pink;
   text-align: left;
   overflow: hidden;
   font-size: 1em;
   line-height: 1.2em;
   font-family: Arial;
+  margin-bottom: 2em;
 }
 #step-directives p {
   margin: 0;
   padding: 0;
 }
-#data-plot {
-  height: 80%;
+#plot {
+  height: 450px;
   width: 100%;
 }
 #data-plot img.loading {

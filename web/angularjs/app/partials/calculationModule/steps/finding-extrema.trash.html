@@ -1,26 +1,3 @@
-<div id="page-body">
-  <a ng-click="goToPreviousUserStep()"
-    ng-show="userStep>0"
-  >
-    <img id="button-back" ng-src="{[{IMG_PATH}]}/arrow-back-2.png"></img>
-  </a>
-  <div id="content">
-    <div ui-view id="step-directives">
-      <a ui-sref="finding-extrema.step1">load step 1 </a>
-      <a ui-sref="finding-extrema.step0">load step 0 </a>
-    </div>
-
-    <div id="data-plot" class="data-plot"></div>
-    <div ng-click="showDataTable = !showDataTable" class="points-table-show-hide-button">
-      show/hide data table
-    </div>
-    <div id="data-table"></div>
-
-  </div>
-  <a ng-click="goToNextUserStep()" >
-    <img id="button-forward" ng-src="{[{IMG_PATH}]}/arrow-forward-2.png"></img>
-  </a>
-</div>
 
   <div film-spectrum-upload-form></div>
 

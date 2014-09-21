@@ -41,8 +41,9 @@
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/findingExtremaPage.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/applyingSwanepoelFormulas/applyingSwanepoelFormulasPage.js') }}"></script>
       <!-- partials -->
-      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/calculationError.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/plot.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/pointsTable.js') }}"></script>
+      <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/calculationError.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/loading.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/rawExperimentalData.js') }}"></script>
       <script src="{{ asset('angularjs/app/js/modules/calculationModule/directives/extrema.js') }}"></script>
@@ -99,6 +100,9 @@
     <a href="#/finding-extrema">find extrema</a>
     <a href="#/applying-swanepoel-formulas">apply formulas</a>
   </div>
+</div>
+<div id="loading-container">
+  <span id="loading">loading...</span>
 </div>
 
 <div id="site-body" ui-view></div>

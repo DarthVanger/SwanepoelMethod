@@ -1,0 +1,13 @@
+<div id="page-body">
+  <a ng-click="goToPreviousUserStep()"
+    ng-show="userStep>0"
+  >
+    <img id="button-back" ng-src="{[{IMG_PATH}]}/arrow-back-2.png"></img>
+  </a>
+  <div ui-view id="content">
+    <a ui-sref="finding-extrema.step0">load step 0 </a>
+  </div>
+  <a ng-click="goToNextUserStep()" >
+    <img id="button-forward" ng-src="{[{IMG_PATH}]}/arrow-forward-2.png"></img>
+  </a>
+</div>

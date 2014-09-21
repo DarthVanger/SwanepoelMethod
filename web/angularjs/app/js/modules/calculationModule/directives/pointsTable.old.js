@@ -5,8 +5,12 @@
 
   app.directive('pointsTable', function(CALCULATION_MODULE_TEMPLATES_PATH) {
     return {
-      restrict: 'EA',
-      templateUrl: CALCULATION_MODULE_TEMPLATES_PATH + 'points-table.html'
-    }
+      restrict: 'A',
+      templateUrl: CALCULATION_MODULE_TEMPLATES_PATH + 'points-table-template.html',
+      scope: {
+        points: '=',
+        tableName: '@name'
+      }
+    };
   });
 })(); // end closure

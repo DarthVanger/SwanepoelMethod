@@ -3,11 +3,10 @@
 
   var app = angular.module('calculationModule');
 
-  app.controller('Step1AdjustUploadedDataCtrl', function($scope, $http, $compile, DataManager, Calculus, Formulas, Plotter) {
+  app.controller('Step1AdjustUploadedDataCtrl', function($rootScope, $state, $scope, $http, $compile, DataManager, Calculus, Formulas, Plotter) {
     var self = this;
 
     console.log("Step1 init");
-    $scope.uiStep = 1;
     showData();
 
     $scope.wavelengthConvertedToNanometers = false;
@@ -52,9 +51,10 @@
     console.log('debug', 'showRawFilmSpectrum() called');
 
     $scope.plotData[0] = { data: DataManager.data.filmSpectrum, label: "film spectrum"};
-    Plotter.plot('data-plot', $scope.plotData, $scope.plotOptions);
-    //handsontableOptions.data = $scope.filmSpectrum;
-    //$('#data-table').handsontable(handsontableOptions);
+    Plotter.plot('plot', $scope.plotData, $scope.plotOptions);
+    //$scope.handsontableOptions.data = DataManager.data.filmSpectrum;
+    //$('#data-table').handsontable($scope.handsontableOptions);
+    $('#loading').hide();
   };
 
   }); // end controller

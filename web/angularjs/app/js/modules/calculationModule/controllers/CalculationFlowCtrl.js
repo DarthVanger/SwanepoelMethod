@@ -14,13 +14,18 @@
        * Number of step the user is currently viewing
        */
       $scope.userStep = 0;
+
+      // load initial step
+      $state.go('finding-extrema.step' + $scope.userStep);
       /**
        * Change interface to next step
        */
       $scope.goToNextUserStep = function() {
         if ($scope.userStep < 10) {
           $scope.userStep++;
-          $state.go('finding-extrema.step' + $scope.userStep);
+          $('#loading').show(function() {
+            $state.go('finding-extrema.step' + $scope.userStep);
+          });
         } else {
           console.log('debug', 'Cant go above last step');
         }
@@ -47,7 +52,7 @@
         tooltip: true
       };
 
-      var handsontableOptions = {
+      $scope.handsontableOptions = {
         contextMenu: true,
         colWidths: [100, 100],
         colHeaders: ['wavelength', 'T'],
@@ -97,9 +102,9 @@
       var self = this;
 
       //$(document).ready(function () {
-        console.log('debug', 'CalcFlowCtr: loading inital exp data');
+        //console.log('debug', 'CalcFlowCtr: loading inital exp data');
 
-        bindListenersToExtremaPlot();
+        //bindListenersToExtremaPlot();
 
         /**
          *  Listen to CalculationError
@@ -167,27 +172,27 @@
         //});
 
         // listen for new film spectrum file upload start to reset calculation progress
-        $scope.$on('NewFilmSpectrumFileUploadStart', function() {
-          console.log('debug', 'CalculationFlowCtrl: caught \'NewFilmSpectrumFileUploadStart\'');
-          resetCalculationProgress();
-        });
+       // $scope.$on('NewFilmSpectrumFileUploadStart', function() {
+       //   console.log('debug', 'CalculationFlowCtrl: caught \'NewFilmSpectrumFileUploadStart\'');
+       //   resetCalculationProgress();
+       // });
 
         // listen for file upload success, to update the experimental data
-        $scope.$on('NewFilmSpectrumFileUploaded', function(event, filename) {
-          console.log('debug', 'CalculationController: Catched \'NewFilmSpectrumFileUploaded\' event');
-          // reset calculation progress, because new data was loaded
-          resetCalculationProgress();
-          $scope.calculationProgress.filmSpectrumFileUploaded = true;
-          // load new data from file
-          DataManager.loadFilmSpectrumFromFile(filename).then(function(result) {
-            $scope.calculationProgress.filmSpectrumDataLoaded = true;
-            // update the data
-            $scope.filmSpectrum = result.data;
-            $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
-            // begin with first step again
-            showRawFilmSpectrum();
-          });
-        });
+        //$scope.$on('NewFilmSpectrumFileUploaded', function(event, filename) {
+        //  console.log('debug', 'CalculationController: Catched \'NewFilmSpectrumFileUploaded\' event');
+        //  // reset calculation progress, because new data was loaded
+        //  resetCalculationProgress();
+        //  $scope.calculationProgress.filmSpectrumFileUploaded = true;
+        //  // load new data from file
+        //  DataManager.loadFilmSpectrumFromFile(filename).then(function(result) {
+        //    $scope.calculationProgress.filmSpectrumDataLoaded = true;
+        //    // update the data
+        //    $scope.filmSpectrum = result.data;
+        //    $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
+        //    // begin with first step again
+        //    showRawFilmSpectrum();
+        //  });
+        //});
 
         /******** calculation step 1 - find extrema *********/
 

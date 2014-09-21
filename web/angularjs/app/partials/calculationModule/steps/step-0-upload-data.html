@@ -1,0 +1,19 @@
+<div ng-controller="FilmSpectrumFileUploadCtrl">
+  <div id="step-directives">
+    <button class="calculation-flow" onclick="document.getElementById('upload-field').click();">Upload film spectrum .csv file</button>
+    <div id="upload-wrap">
+      <input type="file" id="upload-field" ng-file-select="onFileSelect($files)" >
+    </div>
+    <div loading
+      message="Uploading film spectrum file..." 
+      img-path="IMG_PATH"
+      ng-show="loading"
+    ></div>
+    <div ng-if="fileUploadSuccess">
+      {[{ uploadedFileName }]} was successefully uploaded
+    </div>
+    <div ng-if="fileUploadError">
+      File upload server error :(
+    </div>
+  </div>
+</div>
