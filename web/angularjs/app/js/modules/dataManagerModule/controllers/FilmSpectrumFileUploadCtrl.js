@@ -13,6 +13,7 @@
     $scope.fileUploadSuccess = false;
     $scope.fileUploadError = false;
     $scope.onFileSelect = function($files) {
+      $scope.loading = true;
       $scope.$emit('NewExtremaFileUploadStart');
       for (var i = 0; i < $files.length; i++) {
         var file = $files[i];
@@ -25,6 +26,7 @@
         }).progress(function(evt) {
           console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
         }).success(function(data, status, headers, config) {
+          $scope.loading = false;
           // file is uploaded successfully
           console.log('debug', 'response data: ' + data);
           console.log('debug', 'response status: ' + status);
@@ -37,6 +39,7 @@
           $scope.$emit('NewFilmSpectrumFileUploaded', $scope.uploadedFileName);
         }).error(function() {
             console.log('debug', 'file upload error');
+            $scope.loading = false;
             $scope.fileUploadError = true;
         });
       }

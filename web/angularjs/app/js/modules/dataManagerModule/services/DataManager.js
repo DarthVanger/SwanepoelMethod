@@ -373,14 +373,56 @@
      */
     this.indexOfPoint = function(pointsArray, point) {
       var index = -1;
-      for(var i=0; i<pointsArray.length; i++) {
-        if(pointsArray[i][0] == point[0] && pointsArray[i][1] == point[1]) {
+      for (var i=0; i<pointsArray.length; i++) {
+        if (pointsArray[i][0] == point[0] && pointsArray[i][1] == point[1]) {
           index = i;
           break;
         }
       }
       return index;
     }
+
+    /**
+     *  Returns index of a point in pointsArray, close enough required point.
+     *  SpreadX and spreadY are defined inside the method.
+     *  @param pointsArray array of points to look in.
+     *  @param point array [x,y], a point to search points near.
+     *  @return index of nearest point or -1 if nothing was found.
+     */
+    this.indexOfPointNear = function(pointsArray, point) {
+      var spreadX = 5;
+      var spreadY = 0.007;
+      var nearbyPoints = [];
+      //console.log("DataManager.indexOfPointNear(): looking for points near ("+point[0]+","+point[1]+")");
+      
+      for (var i=0; i<pointsArray.length; i++) {
+        if (
+              ( pointsArray[i][0] > (point[0] - spreadX) )
+           && ( pointsArray[i][0] < (point[0] + spreadX) )
+           && ( pointsArray[i][1] > (point[1] - spreadY) )
+           && ( pointsArray[i][1] < (point[1] + spreadY) )
+        ) { 
+          // point is close enough
+          //console.log("DataManager.indexOfPointNear(): found a close point: ("+pointsArray[i][0]+","+pointsArray[i][1]+")");
+          var Xdistance = pointsArray[i][0] - point[0];
+          var Ydistance = pointsArray[i][1] - point[1];
+          var distance = Math.sqrt(Xdistance^2 + Ydistance^2);
+          nearbyPoints.push({'index': i, 'distance': distance});
+        }
+      }
+      
+      if (nearbyPoints.length > 0) {
+        // sort nearbyPoints by distance
+        nearbyPoints.sort(function(a, b) {
+          return a.distance - b.distance; 
+        });
+
+        return nearbyPoints[0].index;
+      } else {
+        return -1;
+      }
+    }
+
     /**
      *  Replace column (1d array) in table (2d array).
      *  @param table 2d array of rows [[a1, b1, ...], [a2, b2, ...], ...].

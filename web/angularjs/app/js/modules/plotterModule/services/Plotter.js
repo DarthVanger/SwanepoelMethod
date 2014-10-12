@@ -6,17 +6,17 @@
   /** Plotter service
    *  Provides methods for plotting
    */
-  app.service('Plotter', function() {
+  app.service('Plotter', function(LoadingIndicator) {
     var self = this;
 
-    this.plotId = 'data-plot';
+    this.plotId = 'plot';
 
     //this.plotHeight = '400px';
     //this.plotWidth = '90%';
     
-    //this.calculationsOutputArea = document.getElementById('calculations-output-area');
 
-    this.plotOptions = {
+    this.data = [];
+    this.options = {
       lines: { show: false },
       points: { show: true, fill: true, radius: 1, symbol: 'circle' },
       grid: { hoverable: true },
@@ -27,22 +27,16 @@
       }
     };
 
-
-    //this.spawnPlot = function(plotId, data) {
-    //  var plotDiv = document.createElement('div'); 
-    //  plotDiv.style.height = self.plotHeight; 
-    //  plotDiv.style.width = self.plotWidth; 
-    //  plotDiv.id = plotId;
-
-    //  self.calculationsOutputArea.appendChild(plotDiv);
-    //  self.plot(plotId, data); 
-    //}
-
     this.plot = function(plotId, data, options) {
+      if (!plotId) plotId = self.plotId;
+      if (!data) data = self.data;
+      if (!options) options = self.options;
+      
       console.log('Plotter: plotting to #' + plotId);
       $('#' + plotId).html('');
-      options = jsonConcat(self.plotOptions, options);
+      options = jsonConcat(self.options, options);
       $.plot($('#' + plotId), data, options);
+      LoadingIndicator.plot.hide();
     }
 
     this.setPlotToLoadingState = function() {

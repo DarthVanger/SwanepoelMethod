@@ -50,8 +50,8 @@
   function showData() {
     console.log('debug', 'showRawFilmSpectrum() called');
 
-    $scope.plotData[0] = { data: DataManager.data.filmSpectrum, label: "film spectrum"};
-    Plotter.plot('plot', $scope.plotData, $scope.plotOptions);
+    Plotter.data[0] = { data: DataManager.data.filmSpectrum, label: "film spectrum"};
+    Plotter.plot();
     //$scope.handsontableOptions.data = DataManager.data.filmSpectrum;
     //$('#data-table').handsontable($scope.handsontableOptions);
     $('#loading').hide();

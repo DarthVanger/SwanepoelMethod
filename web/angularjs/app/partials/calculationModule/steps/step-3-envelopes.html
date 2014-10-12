@@ -1,0 +1,17 @@
+<div id="step-directives">
+  <div>
+    Adjust the envelopes. Left mouse click to add a point, right click - to remove.
+    <br />
+    <button ng-class="{'btn-pressed': maximaActive}" class="btn btn-red" ng-click="switchMouseClickFunction('maxima')">
+      add maxima envelope point
+    </button>
+    <br />
+    <button ng-class="{'btn-pressed': minimaActive}" class="btn btn-blue" ng-click="switchMouseClickFunction('minima')">
+      add minima envelope point
+    </button>
+    <br />
+    (If you need to remove/add extrema points, you have to go back to the previous step)
+  </div>
+</div>
+
+<div id="plot" class="plot"></div>

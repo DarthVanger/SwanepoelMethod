@@ -45,6 +45,10 @@
       .state('finding-extrema.step2', {
         templateUrl: '/angularjs/app/partials/calculationModule/steps/step-2-find-extrema.html',
         controller: 'Step2FindExtremaCtrl'
+      })
+      .state('finding-extrema.step3', {
+        templateUrl: '/angularjs/app/partials/calculationModule/steps/step-3-envelopes.html',
+        controller: 'Step3EnvelopesCtrl'
       });
   });
 

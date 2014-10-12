@@ -1,7 +1,21 @@
 <div id="step-directives">
-    <div class="attention">Please, <b>manually</b> add extra points for envelope edges!</div>
-    <div>left click to add minimum, right click to add maximum</div>
-    <div>third mouse button (mousewheel) click to remove extremum</div>
+  <!-- <h2>Extrema</h2> -->
+  <div>
+    Correct the extrema points (if needed).<br/>
+    Left mouse click to add extremum.<br />
+    Right click to remove extremum.<br />
+    You can also set the boundaries, within which the program should look for extrema.
+  </div>
+  <div>
+    <button ng-class="{'btn-pressed': maximaActive}" class="btn btn-red" ng-click="switchMouseClickFunction('maxima')">
+      add maxima point
+    </button>
+  </div>
+  <div>
+    <button ng-class="{'btn-pressed': minimaActive}" class="btn btn-blue" ng-click="switchMouseClickFunction('minima')">
+      add minima point
+    </button>
+  </div>
 </div>
       <!-- boundaries -->
       <hr />
@@ -17,10 +31,13 @@
 
     <!-- Extrema tables -->
       <!-- Minima table -->
+      <!--
       <div class="points-table-name"> Minima </div>
       <div id="minima-table"></div>
+      -->
 
       <!-- Maxima table -->
+      <!--
       <div class="points-table-name"> Maxima </div>
       <div id="maxima-table"></div>
 
@@ -34,3 +51,4 @@
       >
         Apply table edits 
       </button>
+      -->

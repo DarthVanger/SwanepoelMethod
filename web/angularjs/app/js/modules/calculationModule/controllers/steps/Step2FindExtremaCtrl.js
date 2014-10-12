@@ -3,23 +3,56 @@
 
   var app = angular.module('calculationModule');
 
-  app.controller('Step2FindExtremaCtrl', function($scope, $http, $compile, DataManager, Calculus, Formulas, Plotter) {
+  app.controller('Step2FindExtremaCtrl', function($scope, $http, $compile, DataManager, Calculus, Formulas, Plotter, LoadingIndicator) {
     var self = this;
 
     console.log("Step2 init");
+    LoadingIndicator.global.hide();
+
+    // indicators for type of extrema that should be added by left mouse click on plot
+    $scope.maximaActive = true;
+    $scope.minimaActive = false;
 
     $scope.extrema = 'not calculated yet';
-    $scope.extremaLeftBoundary = 400;
-    $scope.extremaRightBoundary;
+    if (!DataManager.data.extremaLeftBoundary) {
+      DataManager.data.extremaLeftBoundary = 400;
+      $scope.extremaLeftBoundary = DataManager.data.extremaLeftBoundary;
+      DataManager.data.extremaRightBoundary;
+      $scope.extremaRightBoundary;
+    } else {
+      $scope.extremaLeftBoundary = DataManager.data.extremaLeftBoundary;
+      $scope.extremaRightBoundary = DataManager.data.extremaRightBoundary;
+    }
 
-    findExtrema();
+    if (!DataManager.data.minima) {
+      // user may be coming back from next step, so checking if he has calculated this already
+      findExtrema();
+    } else {
+      // if user has the extrema data already, just plot it
+      plotExtrema();
+      bindListenersToExtremaPlot();
+    }
+
+   $scope.switchMouseClickFunction = function(extremaType) {
+     switch(extremaType) {
+       case 'maxima':
+         $scope.maximaActive = true;
+         $scope.minimaActive = false;
+         break;
+       case 'minima':
+         $scope.minimaActive = true;
+         $scope.maximaActive = false;
+         break;
+     }
+   }
 
     /** 
      *  Find extrema
      */
     function findExtrema() {
       $scope.calculationProgress.calculatingExtrema = true;
-      $scope.extremaRightBoundary = DataManager.data.filmSpectrum[DataManager.data.filmSpectrum.length - 1][0];
+      DataManager.data.extremaRightBoundary = DataManager.data.filmSpectrum[DataManager.data.filmSpectrum.length - 1][0];
+      $scope.extremaRightBoundary = DataManager.data.extremaRightBoundary;
       console.log('findExtrema() called');
       Calculus.findExtrema(DataManager.data.filmSpectrum, {
         leftBoundary: $scope.extremaLeftBoundary,
@@ -31,26 +64,43 @@
         DataManager.data.minima = extrema.minima;
         DataManager.data.maxima = extrema.maxima;
         plotExtrema();
+        //showExtremaTable();
         bindListenersToExtremaPlot();
       });
-      $('#loading').hide();
     }
 
       /** plotExtrema
-       *  Plots extrema to '#plot'
+       *  Plots extrema
        */
     function plotExtrema() {
         // plotData[0] should be  film spectrum
-        $scope.plotData[1] = {data: DataManager.data.minima, label: "minima", points: {radius: 4}}
-        $scope.plotData[2] = {data: DataManager.data.maxima, label: "maxima", points: {radius: 4}};
-        $scope.plotOptions.grid.markings = [];
-        $scope.plotOptions.grid.markings[0] = 
-          { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaLeftBoundary, to: $scope.extremaLeftBoundary} };
-        $scope.plotOptions.grid.markings[1] = 
-          { color: '#000', lineWidth: 1, xaxis: { from: $scope.extremaRightBoundary, to: $scope.extremaRightBoundary} };
-        $scope.plotOptions.grid.clickable = true;
+        Plotter.data[1] = {
+          data: DataManager.data.minima,
+          label: "minima",
+          points: {radius: 4},
+          color: "blue"
+        } 
+        Plotter.data[2] = {
+          data: DataManager.data.maxima,
+          label: "maxima",
+          points: {radius: 4},
+          color: "red"
+        }
+        // clear data in case user is coming back from next step
+        Plotter.data[3] = {};
+        Plotter.data[4] = {};
+        Plotter.data[5] = {};
+        Plotter.data[6] = {};
+        Plotter.options.grid.markings = [];
+        Plotter.options.grid.markings[0] = 
+          { color: '#000', lineWidth: 1, xaxis: { from: DataManager.data.extremaLeftBoundary, to: DataManager.data.extremaLeftBoundary} };
+          console.log("right boundary: " + DataManager.data.extremaRightBoundary);
+          console.log("left boundary: " + DataManager.data.extremaLeftBoundary);
+        Plotter.options.grid.markings[1] = 
+          { color: '#000', lineWidth: 1, xaxis: { from: DataManager.data.extremaRightBoundary, to: DataManager.data.extremaRightBoundary} };
+        Plotter.options.grid.clickable = true;
 
-        Plotter.plot('plot', $scope.plotData, $scope.plotOptions);
+        Plotter.plot();
       };
 
       /**
@@ -58,11 +108,12 @@
        */
       $scope.recalculateExtrema = function() {
         console.log('RecalculateExtrema() called');
+        DataManager.data.extremaLeftBoundary = $scope.extremaLeftBoundary;
+        DataManager.data.rightBoundary = $scope.extremaRightBoundary;
         try {
           Calculus.findExtrema(DataManager.data.filmSpectrum, {
             leftBoundary: $scope.extremaLeftBoundary,
             rightBoundary: $scope.extremaRightBoundary
-            //yThreshold: $scope.extremaYThreshold
           }, function(extrema) {
             console.log('debug', '$scope.recalculateExtrema(): extrema found');
             DataManager.data.minima = extrema.minima;
@@ -79,18 +130,20 @@
       /**
        *  Shows extrema table using handsontable
        */
-      var showExtremaTable = function() {
-        handsontableOptions.data = $scope.minima;
+       /*
+      function showExtremaTable() {
+        handsontableOptions.data = DataManager.data.minima;
         handsontableOptions.colHeaders = ['wavelength', 'T_min'];
         console.log('debug', 'showExtremaTable(): handsontableOptions.data = ' + handsontableOptions.data);
         $('#minima-table').handsontable(handsontableOptions);
-        handsontableOptions.data = $scope.maxima;
+        handsontableOptions.data = DataManager.data.maxima;
         handsontableOptions.colHeaders = ['wavelength', 'T_max'];
         $('#maxima-table').handsontable(handsontableOptions);
       }
+      */
 
       /**
-       *  Binds hover and click events to extrema plot.
+       *  Binds hover and click event listeners to extrema plot.
        *  Hover shows mouse coordinates.
        *  Left click adds minima, right click adds maxima.
        *  Click on extrema removes it. 
@@ -104,17 +157,19 @@
          *  @param point array [x,y] coordinates of extrema to remove.
          */
         var removeExtrema = function(point) {
-          var index = DataManager.indexOfPoint(DataManager.data.minima, point);
+          //var index = DataManager.indexOfPoint(DataManager.data.minima, point);
+          var index = DataManager.indexOfPointNear(DataManager.data.minima, point);
           if (index > -1) {
             DataManager.data.minima.splice(index, 1);
             plotExtrema();
-            showExtremaTable();
+            //showExtremaTable();
           } else {
-            index = DataManager.indexOfPoint(DataManager.data.minima, point);
+            //index = DataManager.indexOfPoint(DataManager.data.maxima, point);
+            index = DataManager.indexOfPointNear(DataManager.data.maxima, point);
             if (index > -1) {
-              DataManager.data.minima.splice(index, 1)
+              DataManager.data.maxima.splice(index, 1)
               plotExtrema();
-              showExtremaTable();
+              //showExtremaTable();
             }
           }
         }
@@ -140,11 +195,6 @@
 
         // enable add/remove extrema functionality to plot
         $("#plot").mousedown(function(event) {
-          if ($scope.calculationProgress.envelopesFound) {
-            $scope.$apply(function(){
-              resetCalculationProgressTo('extremaFound');
-            });
-          }
           console.log('plot click, event.which = ' + event.which + ', mousePosition.x = ' + mousePosition.x);
             if(clickItem) { // clicked on film spectra point
               var x = clickItem.datapoint[0];
@@ -156,20 +206,18 @@
             // add maxima or minima
             switch(event.which) {
               case 1: // left button
-                // add minima
-                DataManager.data.minima.push([x, y]);
+                if ($scope.minimaActive) {
+                  // add minima
+                  DataManager.data.minima.push([x, y]);
+                } else {
+                  // add maxima
+                  DataManager.data.maxima.push([x, y]);
+                }
                 plotExtrema();
-                showExtremaTable();
-                break;
-              case 2: // third button (wheel)
-                removeExtrema([x,y]);
+                //showExtremaTable();
                 break;
               case 3: // right button
-                // add maxima
-                DataManager.data.maxima.push([x, y]);
-                plotExtrema();
-                showExtremaTable();
-                return false;
+                removeExtrema([x,y]);
                 break;
             }
         });
