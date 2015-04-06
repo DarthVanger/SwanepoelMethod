@@ -1,0 +1,76 @@
+\documentclass[a4paper, 14pt]{article}
+
+\usepackage{soul}
+\usepackage{titlesec}
+\usepackage{setspace}
+
+% package for lists
+\usepackage{enumitem}
+% reduce space before list
+\setlist{nolistsep}
+
+% lists geometry
+\let\olditemize\itemize
+\renewcommand{\itemize}{
+  \olditemize
+  \setlength{\itemsep}{-8pt}
+  \setlength{\parskip}{-8pt}
+  \setlength{\parsep}{-8pt}
+}
+
+% line spacing
+\onehalfspacing
+
+% margins
+\usepackage[total={5in, 8.7in}]{geometry}
+
+% this is a global declaration that changes the appearance of the section command
+\titleformat{\section}{\large\scshape\raggedright}{}{0em}{}
+
+\begin{document}
+
+\begin{center}
+	\textsc{\Huge{\so{Ivan Sergienko}}}
+\end{center}
+
+\section{Brief Summary}
+	Php/Js homegrown developer with experience of making websites with basic functionality. \\
+	I like coding in Vim; writing clean, easy to read/understand code; top-down design; solving interesting problems.
+\section{Experiences}
+	2012-2014:\\
+	Developing simple websites by myself, for tiny companies. \\
+	I wrote around 8 websites from scratch, mostly using CodeIgniter php framework. \\
+	Problems I worked on: \\
+	\vspace{-1.5em}
+	\begin{itemize}
+		\item interface for customer to edit website content.\\
+		\item e-shop cart for making online orders.\\
+		\item simple databases for products / website content. \\
+		\item js, css animation; js/php form validation; ajax.
+	\end{itemize}
+\section{Skills}
+	Php\&mysql, javascript (+jquery, +angular) - upper beginner :) \\
+	Git, linux, vim - beginner \\
+	MVC pattern \\
+  CodeIgniter php framework \\
+  Symfony, Doctrine - a little bit \\
+\section{Projects \& Code Examples}
+	Check out my CodeIgniter based tiny eShop at \\
+    https://bitbucket.org/DarthVanger/spyoptics.kiev.ua/src
+	% (my PHP can be found in src/application/models/ ) \\
+	% (my JS can be found in src/assets/js/ )
+\section{Education}
+	3 years in Kiev Polytechnic Institute, Applied physics. \\
+	Stanford programming methodology course (15 hours of lectures on youtube). \\
+	Epam Java web development course (100 hours in classroom). \\
+	w3schools.com, php.net, stackoverflow :)
+\section{Languages}
+	English - Upper Intermediate (around 7/10, both spoken and written).
+\section{Contact}
+	tel. 093 078 01 38 \\
+	email: ivan.sergiienko@gmail.com \\
+	website: vanger.kiev.ua
+\section{Personal Info}
+	Age: 23 years \\
+	Residence: Kiev
+\end{document}
