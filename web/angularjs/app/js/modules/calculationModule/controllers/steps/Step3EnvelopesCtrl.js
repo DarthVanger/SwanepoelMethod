@@ -6,6 +6,9 @@
   app.controller('Step3EnvelopesCtrl', function($scope, $http, $compile, DataManager, Calculus, Formulas, Plotter, LoadingIndicator) {
     var self = this;
 
+    console.log("Step3 init");
+    LoadingIndicator.global.hide();
+
     // indicators for type of extrema that should be added by left mouse click on plot
     $scope.maximaActive = true;
     $scope.minimaActive = false;
@@ -17,12 +20,11 @@
         minima: [] 
       }
     }
+    
     // set left envelopes' ends to the first point of spectrum
     DataManager.data.envelope.auxiliaryPoints.minima[0] = DataManager.sort(DataManager.data.filmSpectrum)[0];
     DataManager.data.envelope.auxiliaryPoints.maxima[0] = DataManager.sort(DataManager.data.filmSpectrum)[0];
 
-    console.log("Step3 init");
-    LoadingIndicator.global.hide();
     findEnvelopes();
     bindListenersToPlot();
 
@@ -223,7 +225,7 @@
                 break;
             }
         });
-      }
+      } // end bindListenersToPlot()
 
   }); // end controller
 })(); // end closure

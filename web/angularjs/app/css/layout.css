@@ -57,3 +57,6 @@
   width: 0;
   vertical-align: middle;
 }
+.data-plot {
+    height: 600px;
+}

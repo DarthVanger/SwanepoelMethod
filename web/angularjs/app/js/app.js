@@ -49,6 +49,14 @@
       .state('finding-extrema.step3', {
         templateUrl: '/angularjs/app/partials/calculationModule/steps/step-3-envelopes.html',
         controller: 'Step3EnvelopesCtrl'
+      })
+      .state('finding-extrema.step4', {
+        templateUrl: '/angularjs/app/partials/calculationModule/steps/step-4-pseudo-extrema.html',
+        controller: 'Step4PseudoExtremaCtrl'
+      })
+      .state('finding-extrema.step5', {
+        templateUrl: '/angularjs/app/partials/calculationModule/pages/applying-swanepoel-formulas.html',
+        controller: 'FormulasCtrl'
       });
   });
 
