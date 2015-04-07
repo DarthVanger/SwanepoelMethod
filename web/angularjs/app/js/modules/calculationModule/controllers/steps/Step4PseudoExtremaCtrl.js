@@ -28,25 +28,6 @@
       });
     }
 
-    function saveFinalExtremaTable() {
-      var handsontable = $('#handsontable');//.data('handsontable');
-      var finalExtremaArray = handsontable.getData();
-
-      // save data to DataManger service to pass it to the next step
-      // with new design it's already saved it previous steps
-      //DataManager.data.extrema = finalExtremaArray;
-      //DataManager.data.filmSpectrum = $scope.filmSpectum;
-      //DataManager.data.envelopes.minima = $scope.minimaEnvelope;
-      //DataManager.data.envelopes.maxima = $scope.maximaEnvelope;
-
-      DataManager.data.finalExtremaArray = finalExtremaArray;
-      DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv', 'extrema').then(function(result) {
-        console.log('debug', '$scope.downloadFinalExtremaTable(): save file success, link = ' + result.link);
-        $scope.finalExtremaFileLink = result.link;
-        $scope.finalExtremaFileReady = true;
-      });
-    }
-
     /**
      * Plots pseudo extrema with envelopes
      */
