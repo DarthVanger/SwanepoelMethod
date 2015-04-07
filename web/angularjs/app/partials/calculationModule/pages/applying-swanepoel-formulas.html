@@ -1,4 +1,11 @@
-<link rel="stylesheet" href="http://localhost:8000/angularjs/app/css/old/main.css" />
+<style>
+    .data-plot {
+      height: 600px;
+      width: 1200px;
+      margin: 2em 0 2em 0;
+    }
+</style>
+
 <div extrema-upload-form></div>
 
 <!-- loading: loading extrema data -->
@@ -30,7 +37,7 @@
   <div class="plot-container">
     <h2>Extrema plot</h2>
     <div>mouse coordinates on plot: <span id="extrema-plot-mouse-coordinates"></span></div>
-    <div id="extrema-plot-formulas-page" class="data-plot"></div>
+    <div id="extrema-plot-formulas-page" class="data-plot" style="height: 600px;"></div>
   </div>
 
   <button

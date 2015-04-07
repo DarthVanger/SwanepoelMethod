@@ -35,9 +35,9 @@
        *  Are used with ng-show/ng-hide in html. 
        */
       $scope.calculationProgress = {
-        extremaReady: false,
-        spectrumReady: false,
-        extremaAndSpectrumReady: false
+        extremaReady: true,
+        spectrumReady: true,
+        extremaAndSpectrumReady: true
       };
       $scope.calculationError;
       $scope.calculationErrorCatched = false;
@@ -74,6 +74,7 @@
        *  Or load last used extrema.
        */ 
       if($scope.extrema && $scope.filmSpectrum) {
+          console.log('setting extrema and spectrum ready to true (got it from previous step)');
         $scope.calculationProgress.extremaAndSpectrumReady = true;
       } else {
         DataManager.getLastUploadedExtrema().then(function(result) {
@@ -89,6 +90,7 @@
 
             $scope.calculationProgress.filmSpectrumReady = true;
             $scope.calculationProgress.extremaAndSpectrumReady = true;
+          console.log('setting extrema and spectrum ready to true');
           }); 
         });
       }

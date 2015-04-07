@@ -57,3 +57,10 @@
   width: 0;
   vertical-align: middle;
 }
+// for 'applyting-swanepoel-method' page
+.data-plot {
+  height: 600px;
+  width: 1200px;
+  margin: 2em 0 2em 0;
+}
+
