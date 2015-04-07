@@ -1,0 +1,150 @@
+/* swanepoelMethod main css stylesheet */
+
+/* @import "../bower_components/angular-upload/src/directives/btnUpload.min.css"; */
+@import url("fonts.css");
+@import url("general.css");
+@import url("calculation.css");
+@import url("layout.css");
+
+html, body {
+  padding: 0;
+  margin: 0;
+}
+body {
+}
+body {
+  color: #333;
+  line-height: 1.5em;
+  font-family: europe, Arial;
+}
+
+/* a bit of reset styles */
+a {
+  text-decoration: none;
+}
+button:focus, input:focus {
+  outline: 0;
+}
+button::-moz-focus-inner { border: 0; }
+button:active, input:focus {
+  outline: none;
+}
+/************************/
+
+/* upload form */
+#upload-wrap {
+  display: none;
+}
+/**************/
+
+
+/*** site-header ***/
+#site-header {
+  height: 45px;
+  background-color: black;
+  overflow: hidden;
+}
+#site-name {
+  display: inline-block;
+  vertical-align: top;
+  color: #0586a4;
+  letter-spacing: 2px;
+  font-size: 17px;
+  margin-left: 40px;
+  margin-top: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+/*** navbar ***/
+#navbar {
+  vertical-align: top;
+  display: inline-block;
+  height: 100%;
+  margin-left: 200px;
+  float: right;
+}
+#navbar a {
+  display: inline-block;
+  height: 100%;
+  line-height: 45px;
+  padding: 0 20px 0 20px;
+  margin: 0;
+  font-size: 16px;
+  color: white;
+  border-left: solid #002139 3px;
+}
+/*******************/
+
+.calculation-error {
+  color: #b10490;
+}
+
+button.calculation-flow, .calculation-flow-button {
+  //background-color: #2090ff;
+  background-color: #111;
+  padding: .5em 1em .5em 1em;
+  margin: 1em .3em 1em 0;
+  color: white;
+  font-weight: bold;
+  font-size: .9em;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
+button.download {
+  background-color: #a560aa;
+}
+button.save, button.secondary {
+  font-size: .9em;
+  padding: .3em .6em .3em .6em;
+  border-radius: 2px;
+  background-color: #555;
+}
+input[type="text"] {
+  border: 0;
+  background-color: #eee;
+  padding: .5em;
+  border-radius: .5em;
+  font-family: europe;
+}
+.loading-message {
+  font-size: 1.5em;
+  color: #777;
+  font-weight: bold;
+}
+img.loading-icon {
+  vertical-align: middle;
+}
+
+.calculation-results {
+  width: 100%;
+}
+
+ul.data-points {
+  background-color: #eef;
+  border-radius: 5px;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+ul.data-points li {
+  display: inline-block; 
+  padding: 10px;
+}
+ul.data-points li div.row1 {
+  border-bottom: solid #aaa 1px;
+}
+.points-table-name {
+  font-size: 1.25em;
+  color: #555;
+  margin: .5em 0 .5em 0;
+}
+.points-table-show-hide-button {
+  font-size: 1.25em;
+  color: #b8255d;
+  margin: .5em 0 .5em 0;
+  cursor: pointer;
+}
+.vertical-margins {
+  margin: 1em 0 1em 0;
+}

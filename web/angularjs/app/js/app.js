@@ -63,6 +63,7 @@
 
   app.controller('AppController', function($scope) {
     $scope.IMG_PATH = 'angularjs/app/img';
+    $scope.ASSETS_PATH = 'angularjs/app';
   });
 
 })();

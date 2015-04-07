@@ -1,0 +1,21 @@
+@font-face {
+	font-family: 'bauhaus';
+	src: url('../fonts/BauhausCTTRegular.eot');
+	src: local('☺'), url('../fonts/BauhausCTTRegular.woff') format('woff'), url('../fonts/BauhausCTTRegular.ttf') format('truetype'), url('../fonts/BauhausCTTRegular.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'parkAvenue';
+	src: url('../fonts/ParkAvenueNormalA.eot');
+	src: local('☺'), url('../fonts/ParkAvenueNormalA.woff') format('woff'), url('../fonts/ParkAvenueNormalA.ttf') format('truetype'), url('../fonts/ParkAvenueNormalA.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'europe';
+	src: url('../fonts/EuropeDemiNormal.eot');
+	src: local('☺'), url('../fonts/EuropeDemiNormal.woff') format('woff'), url('../fonts/EuropeDemiNormal.ttf') format('truetype'), url('../fonts/EuropeDemiNormal.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

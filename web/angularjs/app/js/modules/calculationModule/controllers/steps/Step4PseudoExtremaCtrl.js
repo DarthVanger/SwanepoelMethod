@@ -119,9 +119,9 @@
 
         // save data to DataManger service to pass it to the next step
         DataManager.data.extrema = finalExtremaArray;
-        DataManager.data.filmSpectrum = $scope.filmSpectum;
-        DataManager.data.envelopes.minima = $scope.minimaEnvelope;
-        DataManager.data.envelopes.maxima = $scope.maximaEnvelope;
+        // fix the 's' differnece in variable names between 'finding extrema' and 'applying swanepoel formulas :)
+        DataManager.data.envelopes.minima = DataManager.data.envelope.minima;
+        DataManager.data.envelopes.maxima = DataManager.data.envelope.maxima;
 
         DataManager.saveFileFromArray(finalExtremaArray, 'finalExtrema.csv', 'extrema').then(function(result) {
           console.log('debug', '$scope.downloadFinalExtremaTable(): save file success, link = ' + result.link);
