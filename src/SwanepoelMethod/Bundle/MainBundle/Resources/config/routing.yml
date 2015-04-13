@@ -4,6 +4,9 @@ swanepoel_method_main_homepage:
 swanepoel_method_main_upload:
     path:     /upload
     defaults: { _controller: SwanepoelMethodMainBundle:Default:upload}
+swanepoel_method_main_upload_trailing-slash:
+    path:     /upload/
+    defaults: { _controller: SwanepoelMethodMainBundle:Default:upload}
 swanepoel_method_main_get_uploaded_file_contents:
     path:     /get-file-contents/{filename}
     defaults: { _controller: SwanepoelMethodMainBundle:Default:getUploadedFileContents}

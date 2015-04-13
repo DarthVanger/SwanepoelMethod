@@ -1,0 +1,6 @@
+test:
+    path: /test
+    defaults: { _controller: SwanepoelMethodMainBundle:Default:upload }
+SwanepoelMethodMainBundle:
+    resource: "@SwanepoelMethodMainBundle/Resources/config/routing.yml"
+

@@ -38,7 +38,7 @@ class DefaultController extends Controller
             } else {
                 $uploadSubFolder = 'misc';
             }
-            $dir = 'upload/' . $uploadSubFolder . '/';
+            $dir = 'uploadedFiles/' . $uploadSubFolder . '/';
 
             $file = $form['file']->getData();
             $filename = $file->getClientOriginalName();
@@ -62,14 +62,14 @@ class DefaultController extends Controller
                 }
                 return new Response('form is submitted. But there are errors:' . $message);
             } else {
-                return new Response('form is not submitted');
+                return new Response('<html><body>form is not submitted</html></body>');
             }
         }
     }
 
     public function getUploadedFileContentsAction($filename)
     {
-      $filepath = $path = $this->get('kernel')->getRootDir() . '/../web/upload/' . $filename;
+      $filepath = $path = $this->get('kernel')->getRootDir() . '/../web/uploadedFiles/' . $filename;
       if(file_exists($filepath)) {
           $responseContent = file_get_contents($filepath);
       } else {
@@ -80,7 +80,7 @@ class DefaultController extends Controller
 
     public function viewUploadedFileContentsAction($filename)
     {
-      $filepath = $path = $this->get('kernel')->getRootDir() . '/../web/upload/' . $filename;
+      $filepath = $path = $this->get('kernel')->getRootDir() . '/../web/uploadedFiles/' . $filename;
       if(file_exists($filepath)) {
           $responseContent = '<pre>' . file_get_contents($filepath) . '</pre>';
       } else {
@@ -92,16 +92,24 @@ class DefaultController extends Controller
     public function saveFileAction(Request $request) {
       $jsonData = $request->getContent();
       $data = json_decode($jsonData);
+      //$data = new \stdClass();
+      //$data->fileContents = 'bla bla lba test';
+      //$data->filename = 'test1.csv';
+      //$data->directory = '';
       if (isset($data->directory)) {
-        $dir = 'upload/' . $data->directory . '/';
+        $dir = 'uploadedFiles/' . $data->directory . '/';
       } else {
-        $dir = 'upload/savedFiles/';
+        $dir = 'uploadedFiles/savedFiles/';
+      }
+
+      if (!file_exists($dir)) {
+          mkdir($dir);
       }
 
       file_put_contents($dir . $data->filename, $data->fileContents);
       // put a copy also
       file_put_contents($dir . 'lastUploaded.csv', $data->fileContents);
 
-      return new Response('directory = ' . $data->directory);
+      return new Response('File successefully saved to ' . $dir . $data->filename);
     }
 }

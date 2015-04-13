@@ -23,3 +23,8 @@ monolog:
             level: debug
         console:
             type:  console
+
+framework:
+    templating:
+        assets_base_urls:
+            http:   [http://swanepoel.2fh.co/web]

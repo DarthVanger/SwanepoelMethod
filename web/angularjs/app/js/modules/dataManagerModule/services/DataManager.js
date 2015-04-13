@@ -292,6 +292,7 @@
      *  @return Promise object with response.data = filmSpectrum in 2d array format
      */
     this.loadFilmSpectrumFromFile = function(filename) {
+      filename = 'filmSpectrum/' + filename;
       var deferred = $q.defer();
       deferred.resolve(
         FileManager.getFileContents(filename).then(function(result) {
@@ -335,8 +336,8 @@
           console.log('debug', 'DataManager.saveFileFromArray(): success, result = ' + result.data);
 
           var link = directory ? 
-            '/upload/' + directory + '/' + filename :
-            '/upload/savedFiles/' + filename;
+            '/uploadedFiles/' + directory + '/' + filename :
+            '/uploadedFiles/savedFiles/' + filename;
           return {'link': link};
         })
      ); 

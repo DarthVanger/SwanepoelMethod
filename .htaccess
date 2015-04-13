@@ -1,0 +1,8 @@
+ErrorDocument 404 /new404.html
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^((?<!/web/).*)$ /web/$1
+#    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^/(angularjs/.*)$ /web/$1
+</IfModule>
