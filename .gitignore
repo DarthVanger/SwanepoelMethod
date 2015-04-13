@@ -13,3 +13,5 @@
 
 # upload folder for csv files with input data and calculation results
 /web/upload
+
+/temp
