@@ -442,7 +442,7 @@
         var saveWholeFinalResultsTableToFile = function() {
           var resultsTable = cloneArray($scope.calculationResultsArray);
           resultsTable.unshift(['wavelength', 'T_min', 'T_max', 'n_1', 'd_1', 'm_0', 'm', 'd_2', 'n_2']);
-          DataManager.saveFileFromArray($scope.calculationResultsArray, 'final-results-whole-table', 'calculation-results')
+          DataManager.saveFileFromArray($scope.calculationResultsArray, 'final-results-whole-table.csv', 'calculation-results')
             .then(function(result) {
               $scope.finalWholeTableFileLink = result.link;
             });
