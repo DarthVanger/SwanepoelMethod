@@ -43,7 +43,25 @@
      *  E.g. [ [1,2], [2, 4], ... ]
      */
     this.parseCsvString = function(csvString) {
-        var parsedData = $.csv.toArrays(csvString);
+        var commaSemicolonFormatRegex = /(\d+,\d+);\s*(\d+,\d+)\s*/g;
+        if (commaSemicolonFormatRegex.test(csvString)) {
+            // format is like "632,1112516;2,864452684"
+            var lines = csvString.split(/\n+/);
+            if (lines[lines.length-1] == '') {
+                lines.splice(lines.length-1, 1);
+            }
+            var points = [];
+            for (var i=0; i<lines.length; i++) {
+                var point = lines[i].split(/\s*;\s*/);
+                point[0] = point[0].replace(',', '.');
+                point[1] = point[1].replace(',', '.');
+                points.push(point);
+            }
+            var parsedData = points;
+        } else {
+            // assuming format is "632.111234, 2.864459"
+            var parsedData = $.csv.toArrays(csvString);
+        }
 
         console.log('debug', 'parseCsvString(): parsing ok'); 
         return parsedData;
@@ -202,7 +220,7 @@
            console.log('debug', 'ExperimentalDataManager::getLastUploadedFileContents: success');
            var fileContents = response.data;
            var filmSpectrum = self.parseCsvString(fileContents);
-           var filmSpectrum = convertFilmSpectrum(filmSpectrum);
+           //var filmSpectrum = convertFilmSpectrum(filmSpectrum);
            return {data: filmSpectrum};
         })
       );
@@ -298,7 +316,11 @@
         FileManager.getFileContents(filename).then(function(result) {
           var fileContents = result.data;
           var filmSpectrum = self.parseCsvString(fileContents);
-          var filmSpectrum = convertFilmSpectrum(filmSpectrum);
+          console.log('film spectrum :');
+          console.log(filmSpectrum);
+          //var filmSpectrum = convertFilmSpectrum(filmSpectrum);
+          console.log('film spectrum after convert:');
+          console.log(filmSpectrum);
           return {data: filmSpectrum};
         })
      ); 

@@ -22,7 +22,11 @@
       // load new data from file
       DataManager.loadFilmSpectrumFromFile(filename).then(function(result) {
         // update the data
-        DataManager.data.filmSpectrum = result.data;
+        try {
+            DataManager.data.filmSpectrum = result.data;
+        } catch(exception) {
+            console.log(exception)
+        }
         $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
       });
     });

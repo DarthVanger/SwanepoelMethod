@@ -1,20 +1,24 @@
 <div id="step-directives">
   <!-- <div id="test" ng-controller="Step1AdjustRawExperimentalDataCtrl"> -->
   <p>
-    Ajust your experimental data so that you have transmission (Y-axis) ranging from 0 to 1, and wavelengths (X-axis) in nanometers.
+    Ajust your experimental data so that you have transmission (Y-axis) ranging <b>from 0 to 1</b>, and wavelengths (X-axis) <b>in nanometers</b>.
   </p>
-  <button ng-click="convertWavelengthToNanometers()" ng-show="!wavelengthConvertedToNanometers">
-    Convert wavelengths from 1/cm to nanometers
-  </button>
-  <button ng-click="undoConvertWavelengthToNanometers()" ng-show="wavelengthConvertedToNanometers">
-    Undo convert wavelengths from 1/cm to nanometers
+  <br />
+  <br />
+  <button ng-click="convertWavelengthToNanometers()">
+    Convert wavelengths from 1/cm to nanometers (1/cm = 10^7/nm)
   </button>
   <br />
-  <button ng-click="convertTransmissionTo01()" ng-show="!transmissionConvertedTo01">
-    Convert transmission from percents to [0..1]
+  <button ng-click="undoConvertWavelengthToNanometers()">
+    Convert wavelengths from nanometers to 1/cm (1 nm = 10^7/cm)
   </button>
-  <button ng-click="undoConvertTransmissionTo01()" ng-show="transmissionConvertedTo01">
-    Undo convert transmission from percents to [0..1]
+  <br />
+  <button ng-click="convertTransmissionTo01()">
+    Convert transmission from percents to [0..1] (divide by 100)
+  </button>
+  <br />
+  <button ng-click="undoConvertTransmissionTo01()">
+    Convert transmission from [0..1] to percents (multiply by 100);
   </button>
 </div>
 <!-- <div plot></div> -->
