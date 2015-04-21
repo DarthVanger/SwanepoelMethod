@@ -10,6 +10,17 @@
     var self = this;
 
     /**
+     * Format of data written in a csv file:
+     * decimalDelimeter - dot in this example: 58.87
+     * numbersDelimeter - comma in this example: 58.87, 87.25
+     */
+    this.csvFormat = {
+        name = 'dotComma',
+        decimalDelimeter: '.',
+        numbersDelimeter: ','
+    };
+
+    /**
      * Extrema table column numbers
      */
     this.N_1_COLUMN = 3;
@@ -46,6 +57,10 @@
         var commaSemicolonFormatRegex = /(\d+,\d+);\s*(\d+,\d+)\s*/g;
         if (commaSemicolonFormatRegex.test(csvString)) {
             // format is like "632,1112516;2,864452684"
+            this.csvFormat.name = 'commaSemicolon';
+            this.csvFormat.decimalDelimeter = ',';
+            this.csvFormat.numbersDelimeter = ';';
+
             var lines = csvString.split(/\n+/);
             if (lines[lines.length-1] == '') {
                 lines.splice(lines.length-1, 1);
