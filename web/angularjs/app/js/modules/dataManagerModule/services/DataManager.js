@@ -15,7 +15,7 @@
      * numbersDelimeter - comma in this example: 58.87, 87.25
      */
     this.csvFormat = {
-        name = 'dotComma',
+        name: 'dotComma',
         decimalDelimeter: '.',
         numbersDelimeter: ','
     };
@@ -57,6 +57,7 @@
         var commaSemicolonFormatRegex = /(\d+,\d+);\s*(\d+,\d+)\s*/g;
         if (commaSemicolonFormatRegex.test(csvString)) {
             // format is like "632,1112516;2,864452684"
+            console.log('debug', 'File csv format is "commaSemicolon"'); 
             this.csvFormat.name = 'commaSemicolon';
             this.csvFormat.decimalDelimeter = ',';
             this.csvFormat.numbersDelimeter = ';';
@@ -206,12 +207,20 @@
     }
 
     this.convertToCsv = function(data) {
+      if(self.csvFormat.name === 'commaSemicolon') {
+        console.log('debug', 'Converting to CSV, File format is commaSemicolon :)');
+      }
       var csv = '';
       for(var i=0; i<data.length; i++) {
         for(var j=0; j<data[i].length; j++) {
-          csv += data[i][j];
+          var numberString = data[i][j].toString();
+          if(self.csvFormat.name === 'commaSemicolon') {
+            // convert numbers: 45.82 -> 45,82
+            numberString = numberString.replace('.', ',');
+          }
+          csv += numberString;
           if(j<data[i].length - 1) {
-            csv += ',';
+            csv += self.csvFormat.numbersDelimeter;
           }
         }
         csv += '\n'
@@ -331,11 +340,11 @@
         FileManager.getFileContents(filename).then(function(result) {
           var fileContents = result.data;
           var filmSpectrum = self.parseCsvString(fileContents);
-          console.log('film spectrum :');
-          console.log(filmSpectrum);
+          //console.log('film spectrum :');
+          //console.log(filmSpectrum);
           //var filmSpectrum = convertFilmSpectrum(filmSpectrum);
-          console.log('film spectrum after convert:');
-          console.log(filmSpectrum);
+          //console.log('film spectrum after convert:');
+          //console.log(filmSpectrum);
           return {data: filmSpectrum};
         })
      ); 
