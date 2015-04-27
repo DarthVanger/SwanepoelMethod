@@ -215,7 +215,7 @@
         for(var j=0; j<data[i].length; j++) {
           var numberString = data[i][j].toString();
           if(self.csvFormat.name === 'commaSemicolon') {
-            // convert numbers: 45.82 -> 45,82
+            // convert numbers format: 45.82 -> 45,82
             numberString = numberString.replace('.', ',');
           }
           csv += numberString;
@@ -252,17 +252,21 @@
     };
 
     /**
-     *  Converts film spectrum wavelength to nanometer,
-     *  and normalizes Transmission.
+     * Converts transmission from percents to [0..1], if it is in percents
      */
     var convertFilmSpectrum = function(filmSpectrum) {
-      if (self.dataInputSettings) {
-        if (self.dataInputSettings.convertToNanometers) {
-          filmSpectrum = self.convertToNanometers(filmSpectrum);
-        }
-        if (self.dataInputSettings.convertFromPercents) {
-          filmSpectrum = self.convertTransmissionFromPercents(filmSpectrum);
-        }
+      var transmissionIsInPercents = false;
+      for (var key in filmSpectrum) {
+          if (filmSpectrum[key][1] > 1) {
+            transmissionIsInPercents = true;
+            break;
+          }
+      }
+      //if (self.dataInputSettings.convertToNanometers) {
+      //  filmSpectrum = self.convertToNanometers(filmSpectrum);
+      //}
+      if (transmissionIsInPercents) {
+        filmSpectrum = self.convertTransmissionFromPercents(filmSpectrum);
       }
       return filmSpectrum;
     }
@@ -342,7 +346,7 @@
           var filmSpectrum = self.parseCsvString(fileContents);
           //console.log('film spectrum :');
           //console.log(filmSpectrum);
-          //var filmSpectrum = convertFilmSpectrum(filmSpectrum);
+          var filmSpectrum = convertFilmSpectrum(filmSpectrum);
           //console.log('film spectrum after convert:');
           //console.log(filmSpectrum);
           return {data: filmSpectrum};

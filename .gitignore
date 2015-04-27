@@ -16,5 +16,5 @@
 
 /temp
 
-web/uploadedFiles/filmSpectrum/**/*
-
+web/uploadedFiles
+#web/uploadedFiles/filmSpectrum/**/*
