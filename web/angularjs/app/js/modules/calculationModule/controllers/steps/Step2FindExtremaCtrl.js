@@ -15,7 +15,7 @@
 
     $scope.extrema = 'not calculated yet';
     if (!DataManager.data.extremaLeftBoundary) {
-      DataManager.data.extremaLeftBoundary = 400;
+      DataManager.data.extremaLeftBoundary = 450;
       $scope.extremaLeftBoundary = DataManager.data.extremaLeftBoundary;
       DataManager.data.extremaRightBoundary;
       $scope.extremaRightBoundary;

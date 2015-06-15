@@ -3,7 +3,7 @@
 
   var app = angular.module('calculationModule');
 
-  app.controller('Step0UploadDataCtrl', function($scope, $http, $compile, DataManager, Calculus, Formulas, Plotter) {
+  app.controller('Step0UploadDataCtrl', function($scope, $http, $compile, $state, DataManager, Calculus, Formulas, Plotter) {
     var self = this;
 
     console.log("Step0 init");
@@ -30,6 +30,25 @@
         $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
       });
     });
+
+    /**
+     * Use sample data instead of uploading a file.
+     */
+    $scope.tryWithSampleData = function() {
+      //$scope.$emit('NewFilmSpectrumFileUploaded', 'sample.dat');
+      // load new data from file
+      DataManager.loadFilmSpectrumFromFile('sample.dat').then(function(result) {
+        // update the data
+        try {
+            DataManager.data.filmSpectrum = result.data;
+        } catch(exception) {
+            console.log(exception)
+        }
+        $scope.extremaRightBoundary = $scope.filmSpectrum[$scope.filmSpectrum.length-1][0];
+
+        $scope.$parent.goToNextUserStep();
+      });
+    }
 
     /** loadInitialExperimentalData
      *  Loads last uploaded file data as initial data to show instead of blank page.

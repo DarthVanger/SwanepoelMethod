@@ -1,6 +1,8 @@
   /** CalculationFlowCtrl
-   *  Controls the calculation flow (process), responds to user actions.
    *
+   * Controls the 'back', 'next' buttons to switch between calculation steps.
+   * Note: only about first 100 lines of code are used, all the other code
+   * was refactored to './steps' folder into separate controllers!
    */
 (function() { 
    'use strict';

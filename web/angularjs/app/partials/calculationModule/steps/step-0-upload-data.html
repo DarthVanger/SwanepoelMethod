@@ -4,6 +4,11 @@
     <div id="upload-wrap">
       <input type="file" id="upload-field" ng-file-select="onFileSelect($files)" >
     </div>
+    <span style="font-size: 1.3em; margin: 0 10px">OR</span>
+    <a ng-click="tryWithSampleData()" href="javascript: void();" style="font-size: 1.4em;">
+        Try out with sample data
+    </a>
+
     <div loading
       message="Uploading film spectrum file..." 
       img-path="IMG_PATH"
